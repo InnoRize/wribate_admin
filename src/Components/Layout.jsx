@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+// import { Link, useLocation } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
+import Link from "next/link";
+import { usePathname, useRouter } from 'next/navigation';
 import { FaTimes } from "react-icons/fa";
 import { RiRefreshLine } from "react-icons/ri";
 import { FaBell } from "react-icons/fa";
@@ -10,8 +12,8 @@ const SideNavbar = ({ children }) => {
   const [expanded, setExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
-  const location = useLocation();
-  const navigate = useNavigate();
+  const location = usePathname();
+  const router = useRouter();
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
 
@@ -117,7 +119,7 @@ const SideNavbar = ({ children }) => {
               <ul className="space-y-2 px-2">
                 <li>
                   <Link
-                    to="/"
+                    href="/"
                     className={`flex items-center p-1 md:p-2 rounded-lg text-primary hover:bg-purple-100 ${
                       location.pathname === "/" ? "bg-purple-100" : ""
                     } ${expanded ? "justify-start" : "justify-center"}`}
@@ -142,7 +144,7 @@ const SideNavbar = ({ children }) => {
                 </li>
                 <li>
                   <Link
-                    to="/wribates"
+                    href="/wribates"
                     className={`flex items-center p-1 md:p-2 rounded-lg text-primary hover:bg-purple-100 ${
                       location.pathname === "/" ? "bg-purple-100" : ""
                     } ${expanded ? "justify-start" : "justify-center"}`}
@@ -167,7 +169,7 @@ const SideNavbar = ({ children }) => {
                 </li>
                 <li>
                   <Link
-                    to="/users"
+                    href="/users"
                     className={`flex items-center p-2 rounded-lg text-primary hover:bg-purple-100 ${
                       location.pathname === "/add-wribate"
                         ? "bg-purple-100"
@@ -195,7 +197,7 @@ const SideNavbar = ({ children }) => {
 
                 <li>
                   <Link
-                    to="/categories"
+                    href="/categories"
                     className={`flex items-center p-2 rounded-lg text-primary hover:bg-purple-100 ${
                       location.pathname === "/about-us" ? "bg-purple-100" : ""
                     } ${expanded ? "justify-start" : "justify-center"}`}
@@ -313,21 +315,21 @@ const SideNavbar = ({ children }) => {
                 >
                   <div className="py-1" role="menu" aria-orientation="vertical">
                     <Link
-                      to="/"
+                      href="/"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       onClick={toggleMobileMenu}
                     >
                       Dashboard
                     </Link>
                     <Link
-                      to="/add-wribate"
+                      href="/add-wribate"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       onClick={toggleMobileMenu}
                     >
                       Users
                     </Link>
                     <Link
-                      to="/my-wribates"
+                      href="/my-wribates"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       onClick={toggleMobileMenu}
                     >

@@ -1,7 +1,7 @@
 import { fetchBaseQuery, createApi } from "@reduxjs/toolkit/query/react";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: import.meta.env.VITE_APP_BASE_URL,
+  baseUrl: process.env.VITE_APP_BASE_URL,
   // credentials: "include",
   prepareHeaders: (headers) => {
     const token = localStorage.getItem("token"); // Fetch latest token before each request
