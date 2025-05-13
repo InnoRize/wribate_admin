@@ -1,55 +1,118 @@
 import { useState } from "react";
 import { useGetDashboardQuery } from "../../app/services/authApi";
+import { useEffect } from "react";
 
 export default function Dashboard() {
   // Sample data for dashboard metrics
 
   const { data, isLoading, error } = useGetDashboardQuery({
     startDate: "2025-04-24",
-    endDate: "2025-04-25",
+    endDate: "2025-05-25",
   });
 
-  if (data) {
-    console.log(data);
-  }
-  const [metrics] = useState({
+  const [metrics, setMetrics] = useState({
     users: {
-      today: { value: 200, change: "+20%" },
-      weekly: { value: 1250, change: "+15%" },
-      monthly: { value: 5400, change: "+32%" },
-      total: { value: 24680, change: null },
+      today: { value: "---", change: "---" },
+      weekly: { value: "---", change: "---" },
+      monthly: { value: "---", change: "---" },
+      total: { value: "---" , change: null },
     },
     premiumUsers: {
-      today: { value: 45, change: "+5%" },
-      weekly: { value: 320, change: "+12%" },
-      monthly: { value: 1100, change: "+18%" },
-      total: { value: 5230, change: null },
+      today: { value: "---", change: "---" },
+      weekly: { value: "---", change: "---" },
+      monthly: { value: "---", change: "---" },
+      total: { value: null, change: null },
     },
     wribates: {
-      today: { value: 156, change: "+8%" },
-      weekly: { value: 980, change: "+22%" },
-      monthly: { value: 4200, change: "+17%" },
-      total: { value: 18750, change: null },
+      today: { value: "---", change: "---" },
+      weekly: { value: "---", change: "---" },
+      monthly: { value: "---", change: "---" },
+      total: { value: "---", change: null },
     },
     featuredWribates: {
-      today: { value: 24, change: "+33%" },
-      weekly: { value: 125, change: "+10%" },
-      monthly: { value: 480, change: "+25%" },
-      total: { value: 2340, change: null },
+      today: { value: "---", change: "---" },
+      weekly: { value: "---", change: "---" },
+      monthly: { value: "---", change: "---" },
+      total: { value: null, change: null },
     },
     adViews: {
-      today: { value: 5600, change: "+42%" },
-      weekly: { value: 32500, change: "+28%" },
-      monthly: { value: 145000, change: "+35%" },
-      total: { value: 1250000, change: null },
+      today: { value: "---", change: "---" },
+      weekly: { value: "---", change: "---" },
+      monthly: { value: "---", change: "---" },
+      total: { value: null, change: null },
     },
-    wribateAmount: {
-      today: { value: "$1,240", change: "+15%" },
-      weekly: { value: "$8,650", change: "+23%" },
-      monthly: { value: "$36,400", change: "+31%" },
-      total: { value: "$175,800", change: null },
-    },
+    wribateAmount:{
+      today: { value: "---", change: "---" },
+      weekly: { value: "---", change: "---" },
+      monthly: { value: "---", change: "---" },
+      total: { value: "---", change: null },
+    }
   });
+
+  useEffect(() => {
+    if (data && data.status && data.status === "success") {
+      // console.log("data", data.data);
+
+      let activeUsers = 0 
+      if (data.data.userStatusCounts) {
+        activeUsers = data.data.userStatusCounts.find(
+          users => users._id === 1
+        )?.count || 0;
+      }
+
+      let totalWribates = 0
+      if (data.data.writbateTypeCounts) {
+        totalWribates += data.data.writbateTypeCounts.find(
+          wribateType => wribateType._id === 'Free'
+        )?.count || 0;
+        totalWribates += data.data.writbateTypeCounts.find(
+          wribateType => wribateType._id === 'Sonsored'
+        )?.count || 0;
+      }
+      
+      setMetrics({
+        users: {
+          today: { value: "---", change: "---" },
+          weekly: { value: "---", change: "---" },
+          monthly: { value: "---", change: "---" },
+          total: { value: activeUsers , change: null },
+        },
+        premiumUsers: {
+          today: { value: "---", change: "---" },
+          weekly: { value: "---", change: "---" },
+          monthly: { value: "---", change: "---" },
+          total: { value: null, change: null },
+        },
+        wribates: {
+          today: { value: "---", change: "---" },
+          weekly: { value: "---", change: "---" },
+          monthly: { value: "---", change: "---" },
+          total: { value: totalWribates, change: null },
+        },
+        featuredWribates: {
+          today: { value: "---", change: "---" },
+          weekly: { value: "---", change: "---" },
+          monthly: { value: "---", change: "---" },
+          total: { value: null, change: null },
+        },
+        adViews: {
+          today: { value: "---", change: "---" },
+          weekly: { value: "---", change: "---" },
+          monthly: { value: "---", change: "---" },
+          total: { value: null, change: null },
+        },
+        wribateAmount:{
+          today: { value: "---", change: "---" },
+          weekly: { value: "---", change: "---" },
+          monthly: { value: "---", change: "---" },
+          total: { value: data.data.totalCompletedAmount, change: null },
+        }
+      });
+    }
+  }, [data]);
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   const periods = ["Today", "Weekly", "Monthly", "Total"];
   const metrics_keys = [
