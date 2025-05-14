@@ -1,14 +1,17 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import {useDispatch } from "react-redux";
+import { setCredentials, logout } from "./../app/features/authSlice";
 import { useLoginMutation } from "../app/services/authApi";
-import axios from "axios";
 import Toast from "../utils/Toast";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("mlreddy82@gmail.com");
   const [password, setPassword] = useState("lohit123");
-  const navigate = useNavigate();
+  const router = useRouter();
+  const dispatch = useDispatch();
   const [login, { isLoading }] = useLoginMutation();
 
   const handleLogin = async (e) => {
@@ -16,18 +19,25 @@ const LoginPage = () => {
     const data = { email, password };
     try {
       const response = await login(data).unwrap();
+      if (response == null || response?.status != 1) {
+        dispatch(logout());
+        console.error("Login Status not 1:", err);
+        throw new Error(response?.message);
+      }
       // Handle success - e.g., navigate or show a toast
       console.log("Login Successful:", response);
 
       console.log(response?.token);
 
       localStorage.setItem("token", response?.token);
+      dispatch(setCredentials(response.userId));
 
       Toast("Login successful!", "success");
-      navigate("/");
+      router.push("/");
     } catch (err) {
       // Handle error - e.g., show error message
       console.error("Login Failed:", err);
+      dispatch(logout());
       Toast(err?.data?.message || "Login failed. Please try again.", "error");
     }
 
@@ -75,7 +85,7 @@ const LoginPage = () => {
             <h1 className="text-4xl font-bold text-primary ">WriBate</h1>
             <p className="text-gray-500">
               Don't have an account?{" "}
-              <Link to="/sign-up" className="text-primary font-semibold">
+              <Link href="/sign-up" className="text-primary font-semibold">
                 Sign up
               </Link>
             </p>

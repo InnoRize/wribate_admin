@@ -1,6 +1,6 @@
 'use client';
-import Users from "../../Components/Users/Users";
+import Categories from "../../Components/Categories/Categories";
 
 export default function Page() {
-    return <Users />;
+    return <Categories />;
 }

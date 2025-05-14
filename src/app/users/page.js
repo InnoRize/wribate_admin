@@ -1,6 +1,6 @@
 'use client';
-import Wribates from "../../Components/Wribates/Wribates";
+import Users from "../../Components/Users/Users";
 
 export default function Page() {
-    return <Wribates />;
+    return <Users />;
 }

@@ -152,6 +152,31 @@ const SideNavbar = ({ children }) => {
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
+                      className="h-8 w-8"
+                      fill="none"
+                      viewBox="0 0 48 48"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M31.42,31H28.62L26,22.56,23.35,31H20.55l-4-14H19l2.09,8.11,2.58-8.11H26l2.53,8.11L30.58,17h2.44Z"
+                      />
+                    </svg>
+                    {expanded && <span className="ml-3">Wribates</span>}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/blogs"
+                    className={`flex items-center p-1 md:p-2 rounded-lg text-primary hover:bg-purple-100 ${
+                      location.pathname === "/" ? "bg-purple-100" : ""
+                    } ${expanded ? "justify-start" : "justify-center"}`}
+                    onClick={handleLinkClick}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
                       className="h-6 w-6"
                       fill="none"
                       viewBox="0 0 24 24"
@@ -161,10 +186,10 @@ const SideNavbar = ({ children }) => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                        d="M21 11.5v-2a8.38 8.38 0 00-2.5-6 8.38 8.38 0 00-6-2.5 8.38 8.38 0 00-6 2.5A8.38 8.38 0 004 9.5v2A3.5 3.5 0 002 15v3.5A3.5 3.5 0 005.5 22H18.5A3.5 3.5 0 0022 18.5V15a3.5 3.5 0 00-1-2.5zM8 11h8m-8 4h5"
                       />
                     </svg>
-                    {expanded && <span className="ml-3">Wribates</span>}
+                    {expanded && <span className="ml-3">Blogs</span>}
                   </Link>
                 </li>
                 <li>

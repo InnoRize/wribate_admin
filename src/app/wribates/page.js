@@ -1,6 +1,6 @@
 'use client';
-import Categories from "../../Components/Categories/Categories";
+import Wribates from "../../Components/Wribates/Wribates";
 
 export default function Page() {
-    return <Categories />;
+    return <Wribates />;
 }
