@@ -8,6 +8,8 @@ import { RiRefreshLine } from "react-icons/ri";
 import { FaBell } from "react-icons/fa";
 import Header from "./Header";
 import { useGetProfileQuery } from "../app/services/authApi";
+import { FileText, Handshake } from "lucide-react";
+
 const SideNavbar = ({ children }) => {
   const [expanded, setExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -175,20 +177,7 @@ const SideNavbar = ({ children }) => {
                     } ${expanded ? "justify-start" : "justify-center"}`}
                     onClick={handleLinkClick}
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 11.5v-2a8.38 8.38 0 00-2.5-6 8.38 8.38 0 00-6-2.5 8.38 8.38 0 00-6 2.5A8.38 8.38 0 004 9.5v2A3.5 3.5 0 002 15v3.5A3.5 3.5 0 005.5 22H18.5A3.5 3.5 0 0022 18.5V15a3.5 3.5 0 00-1-2.5zM8 11h8m-8 4h5"
-                      />
-                    </svg>
+                    <FileText className="w-5 h-5" />
                     {expanded && <span className="ml-3">Blogs</span>}
                   </Link>
                 </li>
@@ -244,6 +233,21 @@ const SideNavbar = ({ children }) => {
                     </svg>
                     {expanded && (
                       <span className="ml-3 whitespace-nowrap">Categories</span>
+                    )}
+                  </Link>
+                </li>
+
+                <li>
+                  <Link
+                    href="/privacy-terms"
+                    className={`flex items-center p-2 rounded-lg text-primary hover:bg-purple-100 ${
+                      location.pathname === "/privacy-terms" ? "bg-purple-100" : ""
+                    } ${expanded ? "justify-start" : "justify-center"}`}
+                    onClick={handleLinkClick}
+                  >
+                    <Handshake className="w-5 h-5" />
+                    {expanded && (
+                      <span className="ml-3 whitespace-nowrap">Terms and Conditions</span>
                     )}
                   </Link>
                 </li>
