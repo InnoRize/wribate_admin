@@ -15,6 +15,7 @@ export default function Wribates() {
   const [sortDirection, setSortDirection] = useState("desc");
   const [activeDropdown, setActiveDropdown] = useState(null);
   const dropdownRef = useRef(null);
+  const categoryAllWribates = "ALL"
 
   // Category selection state
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -28,8 +29,9 @@ export default function Wribates() {
 
   // Set initial category when categories are loaded
   useEffect(() => {
-    if (categoriesData?.catgories?.length > 0) {
-      setSelectedCategory(categoriesData.catgories[0].categoryName);
+    if (categoriesData?.catgories) {
+      const categoriesList = [{categoryName: categoryAllWribates, }, ...categoriesData.catgories]
+      setSelectedCategory(categoriesList[0].categoryName);
     }
   }, [categoriesData]);
 
@@ -39,9 +41,9 @@ export default function Wribates() {
     isLoading: wribatesLoading,
     isError: wribatesError,
     refetch,
-  } = useGetMyWribatesByCategoryQuery(selectedCategory, {
-    skip: !selectedCategory, // Skip this query if no category is selected
-  });
+  } = useGetMyWribatesByCategoryQuery(selectedCategory || categoryAllWribates, // Use the selected category or "ALL" if none is selected
+    { skip: !selectedCategory,} // Skip this query if no category is selected
+  );
 
   const [filteredWribates, setFilteredWribates] = useState([]);
   const [totalWribates, setTotalWribates] = useState(0);
@@ -63,30 +65,31 @@ export default function Wribates() {
   // Process wribates data
   useEffect(() => {
     if (wribatesData?.data) {
+      console.log("Wribates Data:", wribatesData.data);
       // Combine all types of wribates into a single array
-      const allWribates = [
-        ...(wribatesData.data.ongoing || []),
-        ...(wribatesData.data.completed || []),
-        ...(wribatesData.data.freeWribates || []),
-        ...(wribatesData.data.sponsoredWribates || []),
-      ];
+      const { ongoing, completed, freeWribates, sponsoredWribates } = wribatesData.data;
 
-      // Add a type field to identify which category each wribate belongs to
-      const processedWribates = allWribates.map((wribate) => {
-        let type = "Unknown";
-        if (wribatesData.data.ongoing?.includes(wribate)) type = "Ongoing";
-        else if (wribatesData.data.completed?.includes(wribate))
-          type = "Completed";
-        else if (wribatesData.data.freeWribates?.includes(wribate))
-          type = "Free";
-        else if (wribatesData.data.sponsoredWribates?.includes(wribate))
-          type = "Sponsored";
+      const allWribates = new Map();
 
-        return {
-          ...wribate,
-          statusType: type,
-        };
-      });
+      function addWribates(wribates, type) {
+        for (const wribate of wribates) {
+          const id = wribate._id;
+          if (!allWribates.has(id)) {
+            allWribates.set(id, { ...wribate, statusType: [type] });
+          } else {
+            allWribates.get(id).statusType.push(type);
+          }
+        }
+      }
+
+      addWribates(ongoing, 'Ongoing');
+      addWribates(completed, 'Completed');
+      addWribates(freeWribates, 'Free');
+      addWribates(sponsoredWribates, 'Sponsored');
+      console.log("All Wribates:", allWribates);
+
+      const processedWribates = Array.from(allWribates.values());
+      console.log("Processed Wribates:", processedWribates);
 
       // Store the total count of all wribates before filtering
       setTotalWribates(processedWribates.length);
@@ -101,7 +104,9 @@ export default function Wribates() {
           wribate.category?.toLowerCase().includes(searchLower) ||
           wribate.institution?.toLowerCase().includes(searchLower) ||
           wribate._id?.includes(searchQuery) ||
-          wribate.statusType?.toLowerCase().includes(searchLower)
+          wribate.statusType.some((status) =>
+            status.toLowerCase().includes(searchLower)
+          )
         );
       });
 
@@ -275,7 +280,7 @@ export default function Wribates() {
         <h3 className="text-lg font-semibold mb-2">Categories</h3>
         <div className="overflow-x-auto pb-2">
           <div className="flex space-x-2 whitespace-nowrap">
-            {categoriesData?.catgories?.map((category) => (
+            {[{categoryName: categoryAllWribates, }, ...categoriesData?.catgories].map((category) => (
               <button
                 key={category._id}
                 onClick={() => handleCategoryChange(category.categoryName)}
@@ -461,9 +466,11 @@ export default function Wribates() {
                       {wribate.prizeAmount ? `$${wribate.prizeAmount}` : "-"}
                     </td>
                     <td className="px-4 py-4 text-sm">
-                      <span className={getStatusClass(wribate.statusType)}>
-                        {wribate.statusType}
-                      </span>
+                      {wribate.statusType.map((status, index) => (
+                        <span key={index} className={getStatusClass(status)} style={{ marginRight: '0.5rem' }}>
+                          {status}
+                        </span>
+                      ))}
                     </td>
                     <td className="px-4 py-4 text-right text-sm font-medium relative">
                       <button
