@@ -12,6 +12,9 @@ dist
 /dist.zip/
 dist-ssr
 *.local
+.next
+next-env.d.ts
+.env
 
 # Editor directories and files
 .vscode/*

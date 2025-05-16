@@ -58,10 +58,10 @@ export const authApi = baseApi.injectEndpoints({
     }),
 
     getMyWribatesByCategory: builder.query({
-      query: (category) => `/user/getWribateByCategory/${category}`,
+      query: (category) => `/admin/writesByCategory/${category}`,
     }),
     getMyWribateById: builder.query({
-      query: (id) => `/user/getWribateById/${id}`,
+      query: (id) => `/admin/getWribateById/${id}`,
     }),
     login: builder.mutation({
       query: (data) => ({

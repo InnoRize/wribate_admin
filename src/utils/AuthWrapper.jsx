@@ -21,7 +21,7 @@ const AuthWrapper = ({ children }) => {
       }
 
       const response = await axios.get(
-        `${import.meta.env.VITE_APP_BASE_URL}/user/getProfile`,
+        `${process.env.VITE_APP_BASE_URL}/user/getProfile`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

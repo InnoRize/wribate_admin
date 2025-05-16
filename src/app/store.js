@@ -2,12 +2,14 @@ import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import { baseApi } from "./services/baseApi";
 import authSlice from "./features/authSlice";
+import blogSlice from "./features/blogSlice";
 // import storeSlice from "./services/storeSlice";
 
 export const store = configureStore({
   reducer: {
     auth: authSlice,
     // store: storeSlice,
+    blog: blogSlice,
     [baseApi.reducerPath]: baseApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
