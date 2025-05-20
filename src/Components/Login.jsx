@@ -5,6 +5,8 @@ import {useDispatch } from "react-redux";
 import { setCredentials, logout } from "./../app/features/authSlice";
 import { useLoginMutation } from "../app/services/authApi";
 import Toast from "../utils/Toast";
+import { signInWithEmailAndPassword} from "firebase/auth";
+import { auth } from "../firebase";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,7 +18,17 @@ const LoginPage = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const data = { email, password };
+   
+    var firebaseToken = null;
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential?.user || null;
+      firebaseToken = user?.accessToken || null;
+    } catch (err) {
+      
+    }
+
+    const data = { email, password, firebaseToken };
     try {
       const response = await login(data).unwrap();
       if (response == null || response?.status != 1) {

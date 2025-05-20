@@ -13,6 +13,7 @@ import toast from 'react-hot-toast';
 
 const Blogs = () => {
   const {userId} = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
   console.log("userId",userId)
   const router = useRouter();
   const [blogs, setBlogs] = useState([]);
@@ -50,7 +51,6 @@ const Blogs = () => {
   );
 
   const handleCreate = () => {
-    const dispatch = useDispatch();
     dispatch(setCurrentBlog(null));
     router.push('blogs/post-blog');
   };
@@ -103,7 +103,7 @@ const Blogs = () => {
           </div>
           <Button
             onClick={handleCreate}
-            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700"
+            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
           >
             <PlusCircle size={18} className="mr-1" />
             New Post

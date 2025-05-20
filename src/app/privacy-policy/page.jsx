@@ -1,9 +1,9 @@
 'use client';
-import Categories from "../../Components/Categories/Categories";
+import LegalPages from "../../Components/Terms/LegalPages";
 import ProtectedRoute from "../protected-route";
 
 export default function Page() {
     return <ProtectedRoute>
-        <Categories />
-    </ProtectedRoute>;
+        <LegalPages />
+        </ProtectedRoute>;
 }

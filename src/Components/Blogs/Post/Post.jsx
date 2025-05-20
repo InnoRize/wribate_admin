@@ -167,7 +167,7 @@ export default function SimpleBlogPost() {
                             <div className="pt-2">
                                 <Button
                                     type="submit"
-                                    className="w-full sm:w-auto bg-blue-800 hover:bg-blue-700"
+                                    className="w-full sm:w-auto bg-blue-800 hover:bg-blue-700 text-white"
                                     disabled={isSubmitting}
                                 >
                                     {isSubmitting ? 'Publishing...' : 'Publish Post'}

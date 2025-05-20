@@ -1,6 +1,8 @@
 'use client';
 import Wribates from "../../Components/Wribates/Wribates";
-
+import ProtectedRoute from "../protected-route";
 export default function Page() {
-    return <Wribates />;
+    return <ProtectedRoute>
+        <Wribates />
+    </ProtectedRoute>;
 }

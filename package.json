@@ -11,12 +11,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@firebase/auth": "^1.10.4",
     "@radix-ui/react-label": "^2.1.6",
     "@radix-ui/react-slot": "^1.2.2",
     "@reduxjs/toolkit": "^2.6.1",
     "axios": "^1.8.4",
     "class-variance-authority": "^0.7.1",
     "compressorjs": "^1.2.1",
+    "firebase": "^11.7.3",
     "flowbite": "^3.1.2",
     "he": "^1.2.0",
     "lucide-react": "^0.483.0",
