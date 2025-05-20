@@ -15,7 +15,7 @@ export default function SimpleBlogPost() {
     const editBlog = useSelector((state) => state.blog.currentBlog);;
     const [title, setTitle] = useState(editBlog?.title ||'');
     const [content, setContent] = useState(editBlog?.content || '');
-    const {userInfo} = useSelector((state) => state.auth);
+    const {userId} = useSelector((state) => state.auth);
     const [imagePreview, setImagePreview] = useState(editBlog?.image || null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
@@ -48,7 +48,7 @@ export default function SimpleBlogPost() {
             const res = await axios.post(process.env.NEXT_PUBLIC_APP_BASE_URL + '/blog',{
                 title,
                 content,
-                author_id: userInfo,
+                author_id: userId,
                 image: imagePreview,
                 id:editBlog?._id || null
             }, {
@@ -69,7 +69,7 @@ export default function SimpleBlogPost() {
         }
     };
 
-    if (!userInfo) {
+    if (!userId) {
         return (
             <div className="flex items-center justify-center h-screen">
                 <Card className="w-full max-w-md p-6">

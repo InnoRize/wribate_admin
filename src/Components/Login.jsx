@@ -8,8 +8,8 @@ import Toast from "../utils/Toast";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("mlreddy82@gmail.com");
-  const [password, setPassword] = useState("lohit123");
+  const [email, setEmail] = useState(process?.env?.NEXT_PUBLIC_APP_BASE_EMAIL || "mlreddy82@gmail.com");
+  const [password, setPassword] = useState(process?.env?.NEXT_PUBLIC_APP_BASE_PSWD || "lohit123");
   const router = useRouter();
   const dispatch = useDispatch();
   const [login, { isLoading }] = useLoginMutation();
@@ -30,7 +30,7 @@ const LoginPage = () => {
       console.log(response?.token);
 
       localStorage.setItem("token", response?.token);
-      dispatch(setCredentials(response.userId));
+      dispatch(setCredentials(response));
 
       Toast("Login successful!", "success");
       router.push("/");
