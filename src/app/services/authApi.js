@@ -125,6 +125,30 @@ export const authApi = baseApi.injectEndpoints({
         };
       },
     }),
+
+    addCountry: builder.mutation({
+      query: ({ newCountry }) => ({
+        url: `/admin/addCountry`,
+        method: "POST",
+        body: newCountry,
+      }),
+    }),
+    getCountries: builder.query({
+      query: () => `/admin/getCountries`,
+    }),
+    updateCountry: builder.mutation({
+      query: ({ id, updatedCountry }) => ({
+        url: `/admin/updateCountries/${id}`,
+        method: "PATCH",
+        body: updatedCountry,
+      }),
+    }),
+    deleteCountry: builder.mutation({
+      query: (id) => ({
+        url: `/admin/deleteCountries/${id}`,
+        method: "DELETE",
+      }),
+    }),
   }),
 });
 
@@ -150,4 +174,10 @@ export const {
   useCreateBatchWribateMutation,
 
   useGetUsersQuery,
+
+  useAddCountryMutation,
+  useUpdateCountryMutation,
+  useDeleteCountryMutation,
+  useGetCountriesQuery,
+
 } = authApi;
