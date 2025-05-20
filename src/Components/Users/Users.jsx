@@ -415,7 +415,7 @@ export default function UsersTable() {
                       onClick={() => handleAccessClick(user._id)}
                       className="flex items-center justify-between w-full p-1 hover:bg-gray-100 rounded"
                     >
-                      <span>{user.userRole || "user"}</span>
+                      <span>{user.userRole? (user.subscription.isActive? "premium " : "") + user.userRole : "user"}</span>
                       <svg
                         className="w-4 h-4 ml-1 text-gray-500"
                         fill="none"
@@ -473,6 +473,18 @@ export default function UsersTable() {
                             }`}
                           >
                             Agent
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleRoleChange(user.userName, "premium "+user.userRole)
+                            }
+                            className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
+                              user.userRole === "editor"
+                                ? "bg-blue-50 text-blue-700"
+                                : "text-gray-700"
+                            }`}
+                          >
+                            Premium
                           </button>
                         </div>
                       </div>

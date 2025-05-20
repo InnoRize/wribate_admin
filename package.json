@@ -4,19 +4,25 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@radix-ui/react-label": "^2.1.6",
+    "@radix-ui/react-slot": "^1.2.2",
     "@reduxjs/toolkit": "^2.6.1",
     "axios": "^1.8.4",
+    "class-variance-authority": "^0.7.1",
     "he": "^1.2.0",
     "lucide-react": "^0.483.0",
+    "next": "^15.3.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
+    "react-hot-toast": "^2.5.2",
     "react-icons": "^5.5.0",
     "react-quill-new": "^3.4.6",
     "react-redux": "^9.2.0",
@@ -25,6 +31,7 @@
     "recharts": "^2.15.2",
     "socket.io-client": "^4.8.1",
     "sweetalert2": "^11.17.2",
+    "tailwind-merge": "^3.3.0",
     "tailwind-scrollbar-hide": "^2.0.0"
   },
   "devDependencies": {

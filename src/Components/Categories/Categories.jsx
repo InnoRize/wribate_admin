@@ -27,9 +27,12 @@ export default function CategoriesList() {
     useDeleteCategoryMutation();
 
   useEffect(() => {
-    if (data) {
-      console.log(data);
-      setCategories(data?.catgories);
+    if (data && data.catgories) {
+      // Sort categories by name
+      const categories = [...data.catgories]
+      setCategories(categories.sort((a, b) =>
+        a.categoryName.localeCompare(b.categoryName)
+      ));
     }
   }, [data]);
 
@@ -177,13 +180,13 @@ export default function CategoriesList() {
           No categories found
         </div>
       ) : (
-        <ul className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {categories &&
             categories.length > 0 &&
             categories.map((category, index) => (
-              <li
+              <div
                 key={category._id}
-                className="border border-gray-200 rounded-lg"
+                className="border border-gray-200 rounded-lg shadow-sm bg-white"
               >
                 <div className="flex items-center justify-between p-4">
                   <div className="flex items-center">
@@ -290,9 +293,9 @@ export default function CategoriesList() {
                     )}
                   </div>
                 </div>
-              </li>
+              </div>
             ))}
-        </ul>
+        </div>
       )}
 
       {/* Modal for Add/Edit Category */}

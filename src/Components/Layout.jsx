@@ -1,17 +1,21 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+// import { Link, useLocation } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
+import Link from "next/link";
+import { usePathname, useRouter } from 'next/navigation';
 import { FaTimes } from "react-icons/fa";
 import { RiRefreshLine } from "react-icons/ri";
 import { FaBell } from "react-icons/fa";
 import Header from "./Header";
 import { useGetProfileQuery } from "../app/services/authApi";
+import { FileText, Handshake } from "lucide-react";
+
 const SideNavbar = ({ children }) => {
   const [expanded, setExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
-  const location = useLocation();
-  const navigate = useNavigate();
+  const location = usePathname();
+  const router = useRouter();
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
 
@@ -117,7 +121,7 @@ const SideNavbar = ({ children }) => {
               <ul className="space-y-2 px-2">
                 <li>
                   <Link
-                    to="/"
+                    href="/"
                     className={`flex items-center p-1 md:p-2 rounded-lg text-primary hover:bg-purple-100 ${
                       location.pathname === "/" ? "bg-purple-100" : ""
                     } ${expanded ? "justify-start" : "justify-center"}`}
@@ -142,7 +146,7 @@ const SideNavbar = ({ children }) => {
                 </li>
                 <li>
                   <Link
-                    to="/wribates"
+                    href="/wribates"
                     className={`flex items-center p-1 md:p-2 rounded-lg text-primary hover:bg-purple-100 ${
                       location.pathname === "/" ? "bg-purple-100" : ""
                     } ${expanded ? "justify-start" : "justify-center"}`}
@@ -150,16 +154,16 @@ const SideNavbar = ({ children }) => {
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6"
+                      className="h-8 w-8"
                       fill="none"
-                      viewBox="0 0 24 24"
+                      viewBox="0 0 48 48"
                       stroke="currentColor"
                     >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                        d="M31.42,31H28.62L26,22.56,23.35,31H20.55l-4-14H19l2.09,8.11,2.58-8.11H26l2.53,8.11L30.58,17h2.44Z"
                       />
                     </svg>
                     {expanded && <span className="ml-3">Wribates</span>}
@@ -167,7 +171,19 @@ const SideNavbar = ({ children }) => {
                 </li>
                 <li>
                   <Link
-                    to="/users"
+                    href="/blogs"
+                    className={`flex items-center p-1 md:p-2 rounded-lg text-primary hover:bg-purple-100 ${
+                      location.pathname === "/" ? "bg-purple-100" : ""
+                    } ${expanded ? "justify-start" : "justify-center"}`}
+                    onClick={handleLinkClick}
+                  >
+                    <FileText className="w-5 h-5" />
+                    {expanded && <span className="ml-3">Blogs</span>}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/users"
                     className={`flex items-center p-2 rounded-lg text-primary hover:bg-purple-100 ${
                       location.pathname === "/add-wribate"
                         ? "bg-purple-100"
@@ -195,7 +211,7 @@ const SideNavbar = ({ children }) => {
 
                 <li>
                   <Link
-                    to="/categories"
+                    href="/categories"
                     className={`flex items-center p-2 rounded-lg text-primary hover:bg-purple-100 ${
                       location.pathname === "/about-us" ? "bg-purple-100" : ""
                     } ${expanded ? "justify-start" : "justify-center"}`}
@@ -217,6 +233,21 @@ const SideNavbar = ({ children }) => {
                     </svg>
                     {expanded && (
                       <span className="ml-3 whitespace-nowrap">Categories</span>
+                    )}
+                  </Link>
+                </li>
+
+                <li>
+                  <Link
+                    href="/privacy-terms"
+                    className={`flex items-center p-2 rounded-lg text-primary hover:bg-purple-100 ${
+                      location.pathname === "/privacy-terms" ? "bg-purple-100" : ""
+                    } ${expanded ? "justify-start" : "justify-center"}`}
+                    onClick={handleLinkClick}
+                  >
+                    <Handshake className="w-5 h-5" />
+                    {expanded && (
+                      <span className="ml-3 whitespace-nowrap">Terms and Conditions</span>
                     )}
                   </Link>
                 </li>
@@ -313,21 +344,21 @@ const SideNavbar = ({ children }) => {
                 >
                   <div className="py-1" role="menu" aria-orientation="vertical">
                     <Link
-                      to="/"
+                      href="/"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       onClick={toggleMobileMenu}
                     >
                       Dashboard
                     </Link>
                     <Link
-                      to="/add-wribate"
+                      href="/add-wribate"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       onClick={toggleMobileMenu}
                     >
                       Users
                     </Link>
                     <Link
-                      to="/my-wribates"
+                      href="/my-wribates"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       onClick={toggleMobileMenu}
                     >
