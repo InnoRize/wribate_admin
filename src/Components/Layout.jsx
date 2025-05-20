@@ -83,12 +83,14 @@ const SideNavbar = ({ children }) => {
     setExpandedMasterData(expandedMaserData => !expandedMaserData);
   }
 
+  const isPublicRoute = location.includes('/signin')
+
   return (
     <div>
       {!isMobile && (
         <div className="flex h-screen relative">
           {/* Sidebar */}
-          <div
+          { !isPublicRoute && <div
             className={`bg-white border-r border-gray-200 transition-all duration-300 flex flex-col fixed md:relative t-0  z-10 h-screen ${
               expanded ? "w-64 scrolbar-hide" : "w-16"
             }`}
@@ -314,11 +316,11 @@ const SideNavbar = ({ children }) => {
             </nav>
 
             {/* User Profile */}
-          </div>
+          </div>}
 
           {/* Main Content */}
           <div className="flex-1 relative overflow-auto   scrollbar-hide">
-            <div
+            {!isPublicRoute && <div
               className={`fixed top-0 z-10  bg-white  ${
                 expanded ? "left-64" : "left-16"
               } right-0`}
@@ -329,15 +331,15 @@ const SideNavbar = ({ children }) => {
                 isLoading={isLoading}
                 error={error}
               />
-            </div>
-            <div className="mt-16">{children}</div>
+            </div>}
+            <div className={isPublicRoute?"":"mt-16"}>{children}</div>
           </div>
         </div>
       )}
       {isMobile && (
         <div className="min-h-screen">
           {/* Fixed Header */}
-          <div className="fixed top-0 left-0 right-0 bg-white z-50 border-b border-gray-200">
+          {!isPublicRoute && <div className="fixed top-0 left-0 right-0 bg-white z-50 border-b border-gray-200">
             <div className="p-2 relative">
               <div className="flex flex-row justify-between items-center gap-2">
                 <img className="h-10 w-12" src="/logo.jpeg" alt="logo" />
@@ -487,10 +489,10 @@ const SideNavbar = ({ children }) => {
                 </div>
               )}
             </div>
-          </div>
+          </div>}
 
           {/* Main Content Area */}
-          <div className="pt-16 p-2">{children}</div>
+          <div className={isPublicRoute?"":"pt-16 p-2"}>{children}</div>
         </div>
       )}
     </div>

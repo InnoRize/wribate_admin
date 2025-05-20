@@ -18,8 +18,8 @@ const CreateWribateForm = () => {
         <Card className="w-full max-w-md p-6">
           <CardContent className="text-center">
             <p className="mb-4">Please log in to access your blogs.</p>
-            <Button className="text-white" onClick={() => router.push('/login')}>
-              Go to Login
+            <Button className="text-white" onClick={() => router.push('/signin')}>
+              Go to Signin
             </Button>
           </CardContent>
         </Card>

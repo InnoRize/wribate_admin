@@ -63,9 +63,9 @@ export const authApi = baseApi.injectEndpoints({
     getMyWribateById: builder.query({
       query: (id) => `/admin/getWribateById/${id}`,
     }),
-    login: builder.mutation({
+    signin: builder.mutation({
       query: (data) => ({
-        url: `/admin/login`,
+        url: `/admin/signin`,
         method: "POST",
         body: data,
       }),
@@ -159,7 +159,7 @@ export const authApi = baseApi.injectEndpoints({
 });
 
 export const {
-  useLoginMutation,
+  useSigninMutation,
   useAddCategoryMutation,
   useUpdateCategoryMutation,
   useDeleteCategoryMutation,

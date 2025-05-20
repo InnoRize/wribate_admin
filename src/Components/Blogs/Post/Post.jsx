@@ -78,8 +78,8 @@ export default function SimpleBlogPost() {
                     </CardHeader>
                     <CardContent className="text-center">
                         <p className="mb-4">Please log in to create a blog post.</p>
-                        <Button onClick={() => router.push('/login')}>
-                            Go to Login
+                        <Button onClick={() => router.push('/signin')}>
+                            Go to Signin
                         </Button>
                     </CardContent>
                 </Card>

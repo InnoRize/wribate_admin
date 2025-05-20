@@ -2,21 +2,21 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {useDispatch } from "react-redux";
-import { setCredentials, logout } from "./../app/features/authSlice";
-import { useLoginMutation } from "../app/services/authApi";
+import { setCredentials, logout } from "../app/features/authSlice";
+import { useSigninMutation } from "../app/services/authApi";
 import Toast from "../utils/Toast";
 import { signInWithEmailAndPassword} from "firebase/auth";
 import { auth } from "../firebase";
 
-const LoginPage = () => {
+const SigninPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState(process?.env?.NEXT_PUBLIC_APP_BASE_EMAIL || "mlreddy82@gmail.com");
   const [password, setPassword] = useState(process?.env?.NEXT_PUBLIC_APP_BASE_PSWD || "lohit123");
   const router = useRouter();
   const dispatch = useDispatch();
-  const [login, { isLoading }] = useLoginMutation();
+  const [signin, { isLoading }] = useSigninMutation();
 
-  const handleLogin = async (e) => {
+  const handleSignin = async (e) => {
     e.preventDefault();
    
     var firebaseToken = null;
@@ -30,27 +30,27 @@ const LoginPage = () => {
 
     const data = { email, password, firebaseToken };
     try {
-      const response = await login(data).unwrap();
+      const response = await signin(data).unwrap();
       if (response == null || response?.status != 1) {
         dispatch(logout());
-        console.error("Login Status not 1:", err);
+        console.error("Signin Status not 1:", err);
         throw new Error(response?.message);
       }
       // Handle success - e.g., navigate or show a toast
-      console.log("Login Successful:", response);
+      console.log("Signin Successful:", response);
 
       console.log(response?.token);
 
       localStorage.setItem("token", response?.token);
       dispatch(setCredentials(response));
 
-      Toast("Login successful!", "success");
+      Toast("Signin successful!", "success");
       router.push("/");
     } catch (err) {
       // Handle error - e.g., show error message
-      console.error("Login Failed:", err);
+      console.error("Signin Failed:", err);
       dispatch(logout());
-      Toast(err?.data?.message || "Login failed. Please try again.", "error");
+      Toast(err?.data?.message || "Signin failed. Please try again.", "error");
     }
 
     //navigate("/");
@@ -88,7 +88,7 @@ const LoginPage = () => {
         </div>
       </div>
 
-      {/* Right Side - Login Form */}
+      {/* Right Side - Signin Form */}
       <div
         className={`w-full md:w-1/2 bg-gray-100  p-8 flex flex-col items-center justify-center`}
       >
@@ -100,7 +100,7 @@ const LoginPage = () => {
           <h2 className="text-3xl font-bold mb-4">Sign in</h2>
           <p className="text-gray-500 mb-6">Sign in with Open account</p>
 
-          <form className="space-y-4" onSubmit={handleLogin}>
+          <form className="space-y-4" onSubmit={handleSignin}>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg
@@ -198,7 +198,7 @@ const LoginPage = () => {
               type="submit"
               className="w-full bg-primary text-white py-3 px-4 rounded-md shadow-sm hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
             >
-              Login
+              Signin
             </button>
           </form>
         </div>
@@ -207,4 +207,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default SigninPage;

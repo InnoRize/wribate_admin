@@ -16,20 +16,19 @@ export default function ProtectedRoute({ children }) {
                 process.env.NEXT_PUBLIC_APP_BASE_URL + '/admin/validate-token', 
                 {token}
             )
-            console.log('Token validation response:', res.data)
             if (res.data.status !== 1) {
             localStorage.removeItem('token')
-            router.push('/login')
+            router.push('/signin')
             }
         }
             catch (error) {
                 console.error('Token validation failed:', error)
                 localStorage.removeItem('token')
-                router.push('/login')
+                router.push('/signin')
             }
     }
     if (!token) {
-      router.push('/login')
+      router.push('/signin')
     } else {
         validateToken()
         setChecked(true)

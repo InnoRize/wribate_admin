@@ -9,7 +9,7 @@ const Header = ({ expanded, data, isLoading, error }) => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    router.push("/login");
+    router.push("/signin");
   }
 
   return (
