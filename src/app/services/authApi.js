@@ -155,6 +155,16 @@ export const authApi = baseApi.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    getHtmlContent: builder.query({
+      query: ({ type, name }) => `/admin/getHtmlContent/${type}/${name}`,
+    }),
+    updateHtmlContent: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/admin/updateHtmlContent/${id}`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -187,4 +197,6 @@ export const {
   useDeleteCountryMutation,
   useGetCountriesQuery,
 
+  useGetHtmlContentQuery,
+  useUpdateHtmlContentMutation,
 } = authApi;
