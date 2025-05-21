@@ -1,6 +1,7 @@
+'use client'
+
 import React, { useState, useEffect, useRef } from "react";
-// import { Link, useLocation } from "react-router-dom";
-// import { useNavigate } from "react-router-dom";
+import axios from 'axios'
 import Link from "next/link";
 import { usePathname, useRouter } from 'next/navigation';
 import { FaTimes } from "react-icons/fa";
@@ -19,6 +20,7 @@ const SideNavbar = ({ children }) => {
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
   const [expandedMaserData, setExpandedMasterData] = useState(false);
+  const [hasValidToken, setHasValidToken] = useState(false)
 
   const { data, isLoading, error } = useGetProfileQuery();
   const toggleSidebar = () => {
@@ -34,6 +36,31 @@ const SideNavbar = ({ children }) => {
   };
 
   useEffect(() => {
+    const token = localStorage.getItem('token')
+    async function validateToken(token) {
+      try {
+        const res = await axios.post(
+          process.env.NEXT_PUBLIC_APP_BASE_URL + '/admin/validate-token', 
+          {token}
+        )
+        if (res.data.status !== 1) {
+          localStorage.removeItem('token')
+          router.push('/signin')
+        }
+        setHasValidToken(true)
+      }
+      catch (error) {
+        console.error('Token validation failed:', error)
+        localStorage.removeItem('token')
+        router.push('/signin')
+      }
+    }
+    if (!token) {
+      router.push('/signin')
+    } else {
+      validateToken(token)
+    }
+
     const checkScreenSize = () => {
       setIsMobile(window.innerWidth < 768);
     };
@@ -90,7 +117,7 @@ const SideNavbar = ({ children }) => {
       {!isMobile && (
         <div className="flex h-screen relative">
           {/* Sidebar */}
-          { !isPublicRoute && <div
+          { !isPublicRoute && hasValidToken && <div
             className={`bg-white border-r border-gray-200 transition-all duration-300 flex flex-col fixed md:relative t-0  z-10 h-screen ${
               expanded ? "w-64 scrolbar-hide" : "w-16"
             }`}
@@ -320,7 +347,7 @@ const SideNavbar = ({ children }) => {
 
           {/* Main Content */}
           <div className="flex-1 relative overflow-auto   scrollbar-hide">
-            {!isPublicRoute && <div
+            {!isPublicRoute && hasValidToken && <div
               className={`fixed top-0 z-10  bg-white  ${
                 expanded ? "left-64" : "left-16"
               } right-0`}
@@ -332,14 +359,14 @@ const SideNavbar = ({ children }) => {
                 error={error}
               />
             </div>}
-            <div className={isPublicRoute?"":"mt-16"}>{children}</div>
+            <div className={(isPublicRoute || !hasValidToken) ?"":"mt-16"}>{children}</div>
           </div>
         </div>
       )}
       {isMobile && (
         <div className="min-h-screen">
           {/* Fixed Header */}
-          {!isPublicRoute && <div className="fixed top-0 left-0 right-0 bg-white z-50 border-b border-gray-200">
+          {!isPublicRoute && hasValidToken && <div className="fixed top-0 left-0 right-0 bg-white z-50 border-b border-gray-200">
             <div className="p-2 relative">
               <div className="flex flex-row justify-between items-center gap-2">
                 <img className="h-10 w-12" src="/logo.jpeg" alt="logo" />
@@ -492,7 +519,7 @@ const SideNavbar = ({ children }) => {
           </div>}
 
           {/* Main Content Area */}
-          <div className={isPublicRoute?"":"pt-16 p-2"}>{children}</div>
+          <div className={(isPublicRoute || !hasValidToken) ?"":"pt-16 p-2"}>{children}</div>
         </div>
       )}
     </div>

@@ -1,5 +1,4 @@
 'use client';
-import ProtectedRoute from "../protected-route";
 import Introduction from '../../Components/LegalPages/Privacy/Introduction';
 import Two from '../../Components/LegalPages/Privacy/Two';
 import Three from '../../Components/LegalPages/Privacy/Three';
@@ -11,8 +10,7 @@ import Eight from '../../Components/LegalPages/Privacy/Eight';
 import Nine from '../../Components/LegalPages/Privacy/Nine';
 
 export default function Page() {
-    return <ProtectedRoute>
-        <div className="space-y-8">
+    return <div className="space-y-8">
             <Introduction />
             <Two />
             <Three />
@@ -23,5 +21,4 @@ export default function Page() {
             <Eight />
             <Nine />
         </div>
-        </ProtectedRoute>;
 }

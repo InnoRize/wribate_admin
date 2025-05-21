@@ -7,7 +7,6 @@ import { Editor, EditorProvider,
 } from "react-simple-wysiwyg";
 import {Button} from "../../ui/button";
 import { useUpdateHtmlContentMutation, useGetHtmlContentQuery } from "../../../app/services/authApi";
-import axios from "axios";
 import Swal from "sweetalert2";
 
 export const EditablePlan = ({term}) => {
@@ -20,7 +19,6 @@ export const EditablePlan = ({term}) => {
   const { data: htmlContentData, isLoading, error, refetch } = useGetHtmlContentQuery({ type, name: term?.toLowerCase() });
 
   const handleChange = (e) => {
-    console.log(e.target.value);
     setHtml(e.target.value);
   };
 

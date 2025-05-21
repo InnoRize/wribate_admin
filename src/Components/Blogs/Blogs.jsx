@@ -76,7 +76,7 @@ const Blogs = () => {
       <header className="sticky top-0 bg-white h-16 border-b z-10">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <Button
-            onClick={() => router.replace("/admin")}
+            onClick={() => router.back()}
             variant="ghost"
             size="sm"
             className="flex items-center gap-1 text-gray-600 hover:text-gray-900"
