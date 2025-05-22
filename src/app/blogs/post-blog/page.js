@@ -2,5 +2,5 @@
 import Post from "../../../Components/Blogs/Post/Post";
 
 export default function Page() {
-    return <Post />;
+    return <Post />
 }

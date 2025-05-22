@@ -12,8 +12,9 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 const Blogs = () => {
-  const {userInfo} = useSelector((state) => state.auth);
-  console.log("userInfo",userInfo)
+  const {userId} = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  console.log("userId",userId)
   const router = useRouter();
   const [blogs, setBlogs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,24 +40,29 @@ const Blogs = () => {
       }
     };
 
-    if (userInfo) {
+    if (userId) {
       fetchBlogs();
     }
-  }, [userInfo]);
+  }, [userId]);
 
   const filteredBlogs = blogs.filter((blog) =>
     blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     blog.content.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (!userInfo) {
+  const handleCreate = () => {
+    dispatch(setCurrentBlog(null));
+    router.push('blogs/post-blog');
+  };
+
+  if (!userId) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-50">
         <Card className="w-full max-w-md p-6">
           <CardContent className="text-center">
             <p className="mb-4">Please log in to access your blogs.</p>
-            <Button onClick={() => router.push('/login')}>
-              Go to Login
+            <Button className="text-white" onClick={() => router.push('/signin')}>
+              Go to Signin
             </Button>
           </CardContent>
         </Card>
@@ -70,7 +76,7 @@ const Blogs = () => {
       <header className="sticky top-0 bg-white h-16 border-b z-10">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <Button
-            onClick={() => router.replace("/admin")}
+            onClick={() => router.back()}
             variant="ghost"
             size="sm"
             className="flex items-center gap-1 text-gray-600 hover:text-gray-900"
@@ -96,8 +102,8 @@ const Blogs = () => {
             />
           </div>
           <Button
-            onClick={() => router.push('blogs/post-blog')}
-            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700"
+            onClick={handleCreate}
+            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
           >
             <PlusCircle size={18} className="mr-1" />
             New Post

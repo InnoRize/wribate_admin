@@ -5,7 +5,7 @@ const initialState = {
 };
 
 const blogSlice = createSlice({
-  name: "auth",
+  name: "blog",
   initialState,
   reducers: {
     setCurrentBlog: (state, action) => {

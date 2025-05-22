@@ -63,9 +63,9 @@ export const authApi = baseApi.injectEndpoints({
     getMyWribateById: builder.query({
       query: (id) => `/admin/getWribateById/${id}`,
     }),
-    login: builder.mutation({
+    signin: builder.mutation({
       query: (data) => ({
-        url: `/admin/login`,
+        url: `/admin/signin`,
         method: "POST",
         body: data,
       }),
@@ -100,6 +100,12 @@ export const authApi = baseApi.injectEndpoints({
         body: data,
       }),
     }),
+    deleteWribate: builder.mutation({
+      query: (id) => ({
+        url: `/admin/deleteWribate/${id}`,
+        method: "DELETE",
+      }),
+    }),
     // createBatchWribate: builder.mutation({
     //   query: (data) => ({
     //     url: `/user/createBatchWribate`,
@@ -125,11 +131,45 @@ export const authApi = baseApi.injectEndpoints({
         };
       },
     }),
+
+    addCountry: builder.mutation({
+      query: ({ newCountry }) => ({
+        url: `/admin/addCountry`,
+        method: "POST",
+        body: newCountry,
+      }),
+    }),
+    getCountries: builder.query({
+      query: () => `/admin/getCountries`,
+    }),
+    updateCountry: builder.mutation({
+      query: ({ id, updatedCountry }) => ({
+        url: `/admin/updateCountries/${id}`,
+        method: "PATCH",
+        body: updatedCountry,
+      }),
+    }),
+    deleteCountry: builder.mutation({
+      query: (id) => ({
+        url: `/admin/deleteCountries/${id}`,
+        method: "DELETE",
+      }),
+    }),
+    getHtmlContent: builder.query({
+      query: ({ type, name }) => `/admin/getHtmlContent/${type}/${name}`,
+    }),
+    updateHtmlContent: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/admin/updateHtmlContent/${id}`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
 export const {
-  useLoginMutation,
+  useSigninMutation,
   useAddCategoryMutation,
   useUpdateCategoryMutation,
   useDeleteCategoryMutation,
@@ -143,6 +183,7 @@ export const {
   useGetProfileQuery,
   useUploadImageMutation,
   useCreateWribateMutation,
+  useDeleteWribateMutation,
 
   useGetMyWribatesByCategoryQuery,
   useGetMyWribateByIdQuery,
@@ -150,4 +191,12 @@ export const {
   useCreateBatchWribateMutation,
 
   useGetUsersQuery,
+
+  useAddCountryMutation,
+  useUpdateCountryMutation,
+  useDeleteCountryMutation,
+  useGetCountriesQuery,
+
+  useGetHtmlContentQuery,
+  useUpdateHtmlContentMutation,
 } = authApi;
