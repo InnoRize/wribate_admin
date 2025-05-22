@@ -155,6 +155,29 @@ export const authApi = baseApi.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    addRole: builder.mutation({
+      query: ({ newRole }) => ({
+        url: `/admin/addRole`,
+        method: "POST",
+        body: newRole,
+      }),
+    }),
+    getRoles: builder.query({
+      query: () => `/admin/getRoles`,
+    }),
+    updateRole: builder.mutation({
+      query: ({ id, updatedRole }) => ({
+        url: `/admin/updateRole/${id}`,
+        method: "PATCH",
+        body: updatedRole,
+      }),
+    }),
+    deleteRole: builder.mutation({
+      query: (id) => ({
+        url: `/admin/deleteRole/${id}`,
+        method: "DELETE",
+      }),
+    }),
     getHtmlContent: builder.query({
       query: ({ type, name }) => `/admin/getHtmlContent/${type}/${name}`,
     }),
@@ -196,6 +219,11 @@ export const {
   useUpdateCountryMutation,
   useDeleteCountryMutation,
   useGetCountriesQuery,
+
+  useAddRoleMutation,
+  useUpdateRoleMutation,
+  useDeleteRoleMutation,
+  useGetRolesQuery,
 
   useGetHtmlContentQuery,
   useUpdateHtmlContentMutation,

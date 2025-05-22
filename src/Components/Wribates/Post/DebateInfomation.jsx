@@ -281,7 +281,7 @@ const DebateInformation = ({ formData, handleInputChange, handleFileUpload, cate
                     </div>
                 </div>
 
-                {(!userRole || userRole !== "user") && (
+                {(!userRole || userRole?.toLowerCase() !== "user") && (
                     <div className="mt-6">
                         <FieldLabel htmlFor="institution" tooltip={tooltips.institution}>
                             Institution
