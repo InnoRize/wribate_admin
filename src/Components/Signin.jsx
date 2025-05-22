@@ -1,31 +1,31 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setCredentials, logout } from "../app/features/authSlice";
 import { useSigninMutation } from "../app/services/authApi";
 import Toast from "../utils/Toast";
-import { signInWithEmailAndPassword} from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 
 const SigninPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState(process?.env?.NEXT_PUBLIC_APP_BASE_EMAIL || "mlreddy82@gmail.com");
-  const [password, setPassword] = useState(process?.env?.NEXT_PUBLIC_APP_BASE_PSWD || "lohit123");
+  const [email, setEmail] = useState(process.env.NEXT_PUBLIC_APP_BASE_EMAIL || '');
+  const [password, setPassword] = useState(process.env.NEXT_PUBLIC_APP_BASE_PSWD || '');
   const router = useRouter();
   const dispatch = useDispatch();
   const [signin, { isLoading }] = useSigninMutation();
 
   const handleSignin = async (e) => {
     e.preventDefault();
-   
+
     var firebaseToken = null;
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential?.user || null;
       firebaseToken = user?.accessToken || null;
     } catch (err) {
-      
+
     }
 
     const data = { email, password, firebaseToken };
