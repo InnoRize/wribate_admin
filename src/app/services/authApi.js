@@ -178,14 +178,53 @@ export const authApi = baseApi.injectEndpoints({
         method: "DELETE",
       }),
     }),
-    getHtmlContent: builder.query({
-      query: ({ type, name }) => `/admin/getHtmlContent/${type}/${name}`,
-    }),
-    updateHtmlContent: builder.mutation({
-      query: ({ id, data }) => ({
-        url: `/admin/updateHtmlContent/${id}`,
+    addSubscription: builder.mutation({
+      query: ({ newSubscription }) => ({
+        url: `/admin/addSubscription`,
         method: "POST",
-        body: data,
+        body: newSubscription,
+      }),
+    }),
+    getSubscriptions: builder.query({
+      query: () => `/admin/getSubscriptions`,
+    }),
+    updateSubscription: builder.mutation({
+      query: ({ id, updatedSubscription }) => ({
+        url: `/admin/updateSubscription/${id}`,
+        method: "PATCH",
+        body: updatedSubscription,
+      }),
+    }),
+    deleteSubscription: builder.mutation({
+      query: (id) => ({
+        url: `/admin/deleteSubscription/${id}`,
+        method: "DELETE",
+      }),
+    }),
+    addPage: builder.mutation({
+      query: ({newPage }) => ({
+        url: `/admin/addPage`,
+        method: "POST",
+        body: newPage,
+      }),
+    }),
+    getPage: builder.query({
+      query: ({ name }) => `/admin/getPage/${name}`,
+    }),
+    getAllPages: builder.query({
+      query: () => `/admin/getAllPages`,
+    }),
+    updatePage: builder.mutation({
+      query: ({ id, updatedPage }) => ({
+        url: `/admin/updatePage/${id}`,
+        method: "POST",
+        body: updatedPage,
+      }),
+    }),
+    deletePage: builder.mutation({
+      query: ({ id, }) => ({
+        url: `/admin/deletePage/${id}`,
+        method: "DELETE",
       }),
     }),
   }),
@@ -225,6 +264,15 @@ export const {
   useDeleteRoleMutation,
   useGetRolesQuery,
 
-  useGetHtmlContentQuery,
-  useUpdateHtmlContentMutation,
+  useAddSubscriptionMutation,
+  useUpdateSubscriptionMutation,
+  useDeleteSubscriptionMutation,
+  useGetSubscriptionsQuery,
+
+  useAddPageMutation,
+  useDeletePageMutation,
+  useGetPageQuery,
+  useGetAllPagesQuery,
+  useUpdatePageMutation,
+
 } = authApi;

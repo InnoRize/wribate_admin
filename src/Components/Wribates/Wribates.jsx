@@ -14,7 +14,6 @@ import Swal from "sweetalert2";
 import Toastify from "../../utils/Toast";
 
 export default function Wribates() {
-  const {userId} = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   // Table state management
@@ -276,21 +275,6 @@ export default function Wribates() {
     //   console.error("Wribate not found");
     // }
   };
-
-  if (!userId) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-50">
-        <Card className="w-full max-w-md p-6">
-          <CardContent className="text-center">
-            <p className="mb-4">Please log in to access your blogs.</p>
-            <Button className="text-white" onClick={() => router.push('/signin')}>
-              Go to Signin
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   if (categoriesLoading) {
     return (
