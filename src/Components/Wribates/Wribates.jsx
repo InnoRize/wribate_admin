@@ -2,11 +2,21 @@ import { useState, useEffect, useRef } from "react";
 import {
   useGetCategoriesQuery,
   useGetMyWribatesByCategoryQuery,
+  useDeleteWribateMutation,
 } from "../../app/services/authApi";
+import { Button } from '../../Components/ui/button';
+import { PlusCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Card, CardContent } from '../../Components/ui/card';
+import { useSelector, useDispatch } from "react-redux";
+import { setCurrentWribate, clearWribate } from "../../app/features/wribateSlice";
 import Swal from "sweetalert2";
 import Toastify from "../../utils/Toast";
 
 export default function Wribates() {
+  const {userId} = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
   // Table state management
   const [searchQuery, setSearchQuery] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(50);
@@ -16,6 +26,7 @@ export default function Wribates() {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const dropdownRef = useRef(null);
   const categoryAllWribates = "ALL"
+  const router = useRouter();
 
   // Category selection state
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -26,6 +37,8 @@ export default function Wribates() {
     isLoading: categoriesLoading,
     isError: categoriesError,
   } = useGetCategoriesQuery();
+
+  const [deleteWribate, { isLoading: isDeleting }] = useDeleteWribateMutation();
 
   // Set initial category when categories are loaded
   useEffect(() => {
@@ -65,7 +78,6 @@ export default function Wribates() {
   // Process wribates data
   useEffect(() => {
     if (wribatesData?.data) {
-      console.log("Wribates Data:", wribatesData.data);
       // Combine all types of wribates into a single array
       const { ongoing, completed, freeWribates, sponsoredWribates } = wribatesData.data;
 
@@ -86,10 +98,8 @@ export default function Wribates() {
       addWribates(completed, 'Completed');
       addWribates(freeWribates, 'Free');
       addWribates(sponsoredWribates, 'Sponsored');
-      console.log("All Wribates:", allWribates);
 
       const processedWribates = Array.from(allWribates.values());
-      console.log("Processed Wribates:", processedWribates);
 
       // Store the total count of all wribates before filtering
       setTotalWribates(processedWribates.length);
@@ -216,6 +226,72 @@ export default function Wribates() {
     }
   };
 
+  const handleCreate = () => {
+    dispatch(clearWribate());
+    router.push("/wribates/post-wribate");
+  }
+
+  const handleDelete = (wribateId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteWribate(wribateId)
+          .unwrap()
+          .then(() => {
+            Swal.fire("Deleted!", "Your wribate has been deleted.", "success");
+            refetch();
+          })
+          .catch((error) => {
+            Swal.fire(
+              "Error!",
+              "There was an error deleting the wribate.",
+              "error"
+            );
+            console.error("Error deleting wribate:", error);
+          });
+      }
+    });
+  };
+
+  const handleEdit = (wribate) => {
+    // TODO: Implement edit functionality
+    // if (wribate) {
+    //   console.log("Editing wribate:", wribate);
+    //   dispatch(setCurrentWribate(wribate));
+    //   router.push(`/wribates/post-wribate`);
+    // }
+    // else {
+    //   Swal.fire(
+    //     "Error!",
+    //     "Wribate not found.",
+    //     "error"
+    //   );
+    //   console.error("Wribate not found");
+    // }
+  };
+
+  if (!userId) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-50">
+        <Card className="w-full max-w-md p-6">
+          <CardContent className="text-center">
+            <p className="mb-4">Please log in to access your blogs.</p>
+            <Button className="text-white" onClick={() => router.push('/signin')}>
+              Go to Signin
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   if (categoriesLoading) {
     return (
       <div className="bg-white p-6 rounded-lg shadow-sm flex justify-center items-center h-64">
@@ -298,7 +374,7 @@ export default function Wribates() {
       </div>
 
       {/* Search Bar */}
-      <div className="mb-6">
+      <div className="mb-6 flex flex-row items-center justify-between">
         <div className="relative">
           <input
             type="text"
@@ -324,6 +400,13 @@ export default function Wribates() {
             </svg>
           </div>
         </div>
+        <Button
+          onClick={handleCreate}
+          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
+        >
+          <PlusCircle size={18} className="mr-1" />
+          Create Wribate
+        </Button>
       </div>
 
       {wribatesLoading ? (
@@ -496,10 +579,12 @@ export default function Wribates() {
                             <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                               View Details
                             </button>
-                            <button className="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-100">
+                            <button onClick={() => handleEdit(wribate)}
+                            className="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-100">
                               Edit
                             </button>
-                            <button className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                            <button onClick={() => handleDelete(wribate._id)}
+                            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
                               Delete
                             </button>
                           </div>

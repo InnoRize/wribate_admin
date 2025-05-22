@@ -1,6 +1,7 @@
+'use client'
+
 import React, { useState, useEffect, useRef } from "react";
-// import { Link, useLocation } from "react-router-dom";
-// import { useNavigate } from "react-router-dom";
+import axios from 'axios'
 import Link from "next/link";
 import { usePathname, useRouter } from 'next/navigation';
 import { FaTimes } from "react-icons/fa";
@@ -8,7 +9,7 @@ import { RiRefreshLine } from "react-icons/ri";
 import { FaBell } from "react-icons/fa";
 import Header from "./Header";
 import { useGetProfileQuery } from "../app/services/authApi";
-import { FileText, Handshake } from "lucide-react";
+import { FileText, Handshake, Database, Tags, UserCheck, MapPin, SquareChartGantt, FolderLock } from "lucide-react";
 
 const SideNavbar = ({ children }) => {
   const [expanded, setExpanded] = useState(false);
@@ -18,6 +19,8 @@ const SideNavbar = ({ children }) => {
   const router = useRouter();
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
+  const [expandedMaserData, setExpandedMasterData] = useState(false);
+  const [hasValidToken, setHasValidToken] = useState(false)
 
   const { data, isLoading, error } = useGetProfileQuery();
   const toggleSidebar = () => {
@@ -33,6 +36,31 @@ const SideNavbar = ({ children }) => {
   };
 
   useEffect(() => {
+    const token = localStorage.getItem('token')
+    async function validateToken(token) {
+      try {
+        const res = await axios.post(
+          process.env.NEXT_PUBLIC_APP_BASE_URL + '/admin/validate-token', 
+          {token}
+        )
+        if (res.data.status !== 1) {
+          localStorage.removeItem('token')
+          router.push('/signin')
+        }
+        setHasValidToken(true)
+      }
+      catch (error) {
+        console.error('Token validation failed:', error)
+        localStorage.removeItem('token')
+        router.push('/signin')
+      }
+    }
+    if (!token) {
+      router.push('/signin')
+    } else {
+      validateToken(token)
+    }
+
     const checkScreenSize = () => {
       setIsMobile(window.innerWidth < 768);
     };
@@ -78,12 +106,18 @@ const SideNavbar = ({ children }) => {
     }
   };
 
+  const handleMasterDataClick = () => {
+    setExpandedMasterData(expandedMaserData => !expandedMaserData);
+  }
+
+  const isPublicRoute = location.includes('/signin')
+
   return (
     <div>
       {!isMobile && (
         <div className="flex h-screen relative">
           {/* Sidebar */}
-          <div
+          { !isPublicRoute && hasValidToken && <div
             className={`bg-white border-r border-gray-200 transition-all duration-300 flex flex-col fixed md:relative t-0  z-10 h-screen ${
               expanded ? "w-64 scrolbar-hide" : "w-16"
             }`}
@@ -181,6 +215,75 @@ const SideNavbar = ({ children }) => {
                     {expanded && <span className="ml-3">Blogs</span>}
                   </Link>
                 </li>
+                {/* Master Data */}
+                <li>
+                  <div
+                  className={`flex items-center p-2 rounded-lg cursor-pointer text-primary hover:bg-purple-100 ${
+                  expanded ? "justify-start" : "justify-center"}`}
+                  onClick={handleMasterDataClick}>
+                    <Database className="w-5 h-5" />
+                    {expanded && (
+                      <span className="ml-3 whitespace-nowrap">Master Data</span>
+                    )}
+                  </div>
+                  {/* Dropdown Links */}
+                  {expanded && expandedMaserData && (
+                  <ul className="ml-6 space-y-1">
+                    <li>
+                      <Link href="/categories"
+                        className={`flex items-center p-2 rounded-lg text-primary hover:bg-purple-100 ${
+                          location.pathname === "/about-us" ? "bg-purple-100" : ""
+                        } ${expanded ? "justify-start" : "justify-center"}`}
+                        onClick={handleLinkClick}
+                      >
+                        <Tags className="w-5 h-5" />
+                        {expanded && (
+                          <span className="ml-3 whitespace-nowrap">Categories</span>
+                        )}
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/countries"
+                        className={`flex items-center p-2 rounded-lg text-primary hover:bg-purple-100 ${
+                          location.pathname === "/about-us" ? "bg-purple-100" : ""
+                        } ${expanded ? "justify-start" : "justify-center"}`}
+                        onClick={handleLinkClick}
+                      >
+                        <MapPin className="w-5 h-5" />
+                        {expanded && (
+                          <span className="ml-3 whitespace-nowrap">Countries</span>
+                        )}
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/roles"
+                        className={`flex items-center p-2 rounded-lg text-primary hover:bg-purple-100 ${
+                          location.pathname === "/about-us" ? "bg-purple-100" : ""
+                        } ${expanded ? "justify-start" : "justify-center"}`}
+                        onClick={handleLinkClick}
+                      >
+                        <UserCheck className="w-5 h-5" />
+                        {expanded && (
+                          <span className="ml-3 whitespace-nowrap">Roles</span>
+                        )}
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/subscriptions"
+                        className={`flex items-center p-2 rounded-lg text-primary hover:bg-purple-100 ${
+                          location.pathname === "/about-us" ? "bg-purple-100" : ""
+                        } ${expanded ? "justify-start" : "justify-center"}`}
+                        onClick={handleLinkClick}
+                      >
+                        <SquareChartGantt className="w-5 h-5" />
+                        {expanded && (
+                          <span className="ml-3 whitespace-nowrap">Subscriptions</span>
+                        )}
+                      </Link>
+                    </li>
+                  </ul>
+                  )}
+                </li>
                 <li>
                   <Link
                     href="/users"
@@ -208,38 +311,9 @@ const SideNavbar = ({ children }) => {
                     )}
                   </Link>
                 </li>
-
                 <li>
                   <Link
-                    href="/categories"
-                    className={`flex items-center p-2 rounded-lg text-primary hover:bg-purple-100 ${
-                      location.pathname === "/about-us" ? "bg-purple-100" : ""
-                    } ${expanded ? "justify-start" : "justify-center"}`}
-                    onClick={handleLinkClick}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"
-                      />
-                    </svg>
-                    {expanded && (
-                      <span className="ml-3 whitespace-nowrap">Categories</span>
-                    )}
-                  </Link>
-                </li>
-
-                <li>
-                  <Link
-                    href="/privacy-terms"
+                    href="/terms-conditions"
                     className={`flex items-center p-2 rounded-lg text-primary hover:bg-purple-100 ${
                       location.pathname === "/privacy-terms" ? "bg-purple-100" : ""
                     } ${expanded ? "justify-start" : "justify-center"}`}
@@ -251,15 +325,29 @@ const SideNavbar = ({ children }) => {
                     )}
                   </Link>
                 </li>
+                <li>
+                  <Link
+                    href="/privacy-policy"
+                    className={`flex items-center p-2 rounded-lg text-primary hover:bg-purple-100 ${
+                      location.pathname === "/privacy-terms" ? "bg-purple-100" : ""
+                    } ${expanded ? "justify-start" : "justify-center"}`}
+                    onClick={handleLinkClick}
+                  >
+                    <FolderLock className="w-5 h-5" />
+                    {expanded && (
+                      <span className="ml-3 whitespace-nowrap">Privacy Policy</span>
+                    )}
+                  </Link>
+                </li>
               </ul>
             </nav>
 
             {/* User Profile */}
-          </div>
+          </div>}
 
           {/* Main Content */}
           <div className="flex-1 relative overflow-auto   scrollbar-hide">
-            <div
+            {!isPublicRoute && hasValidToken && <div
               className={`fixed top-0 z-10  bg-white  ${
                 expanded ? "left-64" : "left-16"
               } right-0`}
@@ -270,15 +358,15 @@ const SideNavbar = ({ children }) => {
                 isLoading={isLoading}
                 error={error}
               />
-            </div>
-            <div className="mt-16">{children}</div>
+            </div>}
+            <div className={(isPublicRoute || !hasValidToken) ?"":"mt-16"}>{children}</div>
           </div>
         </div>
       )}
       {isMobile && (
         <div className="min-h-screen">
           {/* Fixed Header */}
-          <div className="fixed top-0 left-0 right-0 bg-white z-50 border-b border-gray-200">
+          {!isPublicRoute && hasValidToken && <div className="fixed top-0 left-0 right-0 bg-white z-50 border-b border-gray-200">
             <div className="p-2 relative">
               <div className="flex flex-row justify-between items-center gap-2">
                 <img className="h-10 w-12" src="/logo.jpeg" alt="logo" />
@@ -351,27 +439,87 @@ const SideNavbar = ({ children }) => {
                       Dashboard
                     </Link>
                     <Link
-                      href="/add-wribate"
+                      href="/wribates"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={toggleMobileMenu}
+                    >
+                      Wribates
+                    </Link>
+                    <Link
+                      href="/blogs"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={toggleMobileMenu}
+                    >
+                      Blogs
+                    </Link>
+                    <div //Master Data
+                    className={`flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100`}
+                    onClick={handleMasterDataClick}
+                    >
+                      Master Data
+                      {expandedMaserData && (
+                      <ul className="ml-6 space-y-1">
+                        <li>
+                          <Link href="/categories"
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            onClick={toggleMobileMenu}
+                          >
+                            Categories
+                          </Link>
+                        </li>
+                        <li>
+                          <Link href="/countries"
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            onClick={toggleMobileMenu}
+                          >
+                            Countries
+                          </Link>
+                        </li>
+                        <li>
+                          <Link href="/roles"
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            onClick={toggleMobileMenu}
+                          >
+                            Roles
+                          </Link>
+                        </li>
+                        <li>
+                          <Link href="/subscriptions"
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            onClick={toggleMobileMenu}
+                          >
+                            Subscriptions
+                          </Link>
+                        </li>
+                      </ul>
+                      )}
+                    </div>
+                    <Link href="/users"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       onClick={toggleMobileMenu}
                     >
                       Users
                     </Link>
-                    <Link
-                      href="/my-wribates"
+                    <Link href="/terms-conditions"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       onClick={toggleMobileMenu}
                     >
-                      Categories
+                      Terms and Conditions
+                    </Link>
+                    <Link href="/privacy-policy"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={toggleMobileMenu}
+                    >
+                      Privacy Policy
                     </Link>
                   </div>
                 </div>
               )}
             </div>
-          </div>
+          </div>}
 
           {/* Main Content Area */}
-          <div className="pt-16 p-2">{children}</div>
+          <div className={(isPublicRoute || !hasValidToken) ?"":"pt-16 p-2"}>{children}</div>
         </div>
       )}
     </div>

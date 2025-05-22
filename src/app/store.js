@@ -3,6 +3,7 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 import { baseApi } from "./services/baseApi";
 import authSlice from "./features/authSlice";
 import blogSlice from "./features/blogSlice";
+import wribateSlice from "./features/wribateSlice";
 // import storeSlice from "./services/storeSlice";
 
 export const store = configureStore({
@@ -10,6 +11,7 @@ export const store = configureStore({
     auth: authSlice,
     // store: storeSlice,
     blog: blogSlice,
+    wribate: wribateSlice,
     [baseApi.reducerPath]: baseApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
