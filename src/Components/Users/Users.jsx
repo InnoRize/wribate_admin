@@ -5,6 +5,9 @@ import {
   useUpdateUserStatusMutation,
 } from "../../app/services/authApi";
 import Toastify from "../../utils/Toast";
+import { Button } from "../../Components/ui/button";
+import { PlusCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function UsersTable() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -15,6 +18,7 @@ export default function UsersTable() {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [accessDropdown, setAccessDropdown] = useState(null);
   const dropdownRef = useRef(null);
+  const router = useRouter();
 
   const { data: usersData, isLoading, error, refetch } = useGetUsersQuery();
 
@@ -285,7 +289,7 @@ export default function UsersTable() {
       <h1 className="text-2xl font-semibold mb-4">Users ({totalUsers})</h1>
 
       {/* Search Bar */}
-      <div className="mb-6">
+      <div className="mb-6 flex flex-row items-center justify-between">
         <div className="relative">
           <input
             type="text"
@@ -311,6 +315,12 @@ export default function UsersTable() {
             </svg>
           </div>
         </div>
+        <Button onClick={() => router.push("/users/add-user")}
+          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
+        >
+          <PlusCircle size={18} className="mr-1" />
+            Add User
+        </Button>
       </div>
 
       {/* Table */}

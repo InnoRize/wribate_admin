@@ -15,7 +15,7 @@ export default function SimpleBlogPost() {
     const editBlog = useSelector((state) => state.blog.currentBlog);;
     const [title, setTitle] = useState(editBlog?.title ||'');
     const [content, setContent] = useState(editBlog?.content || '');
-    const {userInfo} = useSelector((state) => state.auth);
+    const {userId} = useSelector((state) => state.auth);
     const [imagePreview, setImagePreview] = useState(editBlog?.image || null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
@@ -48,7 +48,7 @@ export default function SimpleBlogPost() {
             const res = await axios.post(process.env.NEXT_PUBLIC_APP_BASE_URL + '/blog',{
                 title,
                 content,
-                author_id: userInfo,
+                author_id: userId,
                 image: imagePreview,
                 id:editBlog?._id || null
             }, {
@@ -69,7 +69,7 @@ export default function SimpleBlogPost() {
         }
     };
 
-    if (!userInfo) {
+    if (!userId) {
         return (
             <div className="flex items-center justify-center h-screen">
                 <Card className="w-full max-w-md p-6">
@@ -78,8 +78,8 @@ export default function SimpleBlogPost() {
                     </CardHeader>
                     <CardContent className="text-center">
                         <p className="mb-4">Please log in to create a blog post.</p>
-                        <Button onClick={() => router.push('/login')}>
-                            Go to Login
+                        <Button onClick={() => router.push('/signin')}>
+                            Go to Signin
                         </Button>
                     </CardContent>
                 </Card>
@@ -167,7 +167,7 @@ export default function SimpleBlogPost() {
                             <div className="pt-2">
                                 <Button
                                     type="submit"
-                                    className="w-full sm:w-auto bg-blue-800 hover:bg-blue-700"
+                                    className="w-full sm:w-auto bg-blue-800 hover:bg-blue-700 text-white"
                                     disabled={isSubmitting}
                                 >
                                     {isSubmitting ? 'Publishing...' : 'Publish Post'}

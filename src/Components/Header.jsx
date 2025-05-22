@@ -1,7 +1,17 @@
 import React from "react";
 import { FaBell } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { Button } from "./ui/button";
+import {useRouter} from "next/navigation";
+
 const Header = ({ expanded, data, isLoading, error }) => {
+  const router = useRouter();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    router.push("/signin");
+  }
+
   return (
     <header className="flex flex-col sm:flex-row items-center justify-between px-4 py-3 h-16 border-b border-gray-200">
       {/* Logo */}
@@ -42,7 +52,13 @@ const Header = ({ expanded, data, isLoading, error }) => {
         </div>
       </div>
 
-      {<FaBell size={20} />}
+      <Button onClick={handleLogout}
+       className="text-white" 
+      >
+      Logout
+      </Button>
+
+      {/* Notification Icon */}
 
       {/* User Actions */}
     </header>
