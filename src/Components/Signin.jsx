@@ -10,8 +10,8 @@ import { auth } from "../firebase";
 
 const SigninPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState(process?.env?.NEXT_PUBLIC_APP_BASE_EMAIL || "mlreddy82@gmail.com");
-  const [password, setPassword] = useState(process?.env?.NEXT_PUBLIC_APP_BASE_PSWD || "lohit123");
+  const [email, setEmail] = useState(process.env.NEXT_PUBLIC_APP_BASE_EMAIL || "mlreddy82@gmail.com");
+  const [password, setPassword] = useState(process.env.NEXT_PUBLIC_APP_BASE_PSWD || "lohit123");
   const router = useRouter();
   const dispatch = useDispatch();
   const [signin, { isLoading }] = useSigninMutation();
