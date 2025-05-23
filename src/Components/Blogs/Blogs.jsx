@@ -20,10 +20,17 @@ const Blogs = () => {
 
   useEffect(() => {
     const fetchBlogs = async () => {
+      const token = localStorage.getItem("token")
       try {
         setIsLoading(true);
         const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_APP_BASE_URL}/blogs`,
+          `${process.env.NEXT_PUBLIC_APP_BASE_URL}/admin/getBlogs`,
+          { 
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          withCredentials: true 
+        }
         );
 
         const data = res.data;
@@ -133,9 +140,15 @@ const BlogCard = ({ blog, setBlogs }) => {
   const handleDelete = async (id) => {
     try {
       setIsDeleting(true);
+      const token = localStorage.getItem("token")
       const res = await axios.delete(
-        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/blog/${id}`,
-        { withCredentials: true }
+        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/deleteBlog/${id}`,
+        { 
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          withCredentials: true 
+        }
       );
 
       const data = res.data;

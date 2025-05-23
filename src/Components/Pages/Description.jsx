@@ -34,7 +34,7 @@ export const Description = ({ description, setDescription, disableEdit = false }
 
   return (
     <EditorProvider>
-      <Editor value={html} onChange={handleChange} disabled={disableEdit} className="bg-white border rounded p-2">
+      <Editor value={html} onChange={handleChange} disabled={disableEdit} className="bg-white border rounded p-2 max-h-[80vh] overflow-y-auto">
         <Toolbar>
           <BtnUndo />
           <BtnRedo />

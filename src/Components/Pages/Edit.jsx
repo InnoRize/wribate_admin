@@ -76,7 +76,7 @@ export default function PageForm() {
                 if (response.data.status) {
                     Toastify("Page created successfully","success");
                     dispatch(clearPage());
-                    router.push("/pages");
+                    window.location.href = "/pages"
                 } else {
                     Toastify(response?.data?.msg || "Error creating page","warn");
                 }
@@ -99,7 +99,7 @@ export default function PageForm() {
                 if (!response.error && response.data.status) {
                     Toastify("Page edited successfully","success");
                     dispatch(clearPage());
-                    router.push("/pages");
+                    window.location.href = "/pages"
                 } else {
                     Toastify(response?.data?.msg|| response.error.data.message || "Error editing page","warn");
                 }
@@ -115,7 +115,7 @@ export default function PageForm() {
     const handleCancel = () => {
         dispatch(clearPage());
         setErrors({});
-        router.push("/pages");
+        window.location.href = "/pages"
     };
 
     return (

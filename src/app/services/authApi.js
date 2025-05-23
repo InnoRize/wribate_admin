@@ -39,6 +39,20 @@ export const authApi = baseApi.injectEndpoints({
     getProfile: builder.query({
       query: () => `/user/getProfile`,
     }),
+    addUser: builder.mutation({
+      query: ({ newUser }) => ({
+        url: `/admin/addUser`,
+        method: "POST",
+        body: newUser,
+      }),
+    }),
+    updateUser: builder.mutation({
+      query: ({ id, updatedUser }) => ({
+        url: `/admin/updateUser/${id}`,
+        method: "PATCH",
+        body: updatedUser,
+      }),
+    }),
     getUsers: builder.query({
       query: () => `/admin/getUsers`,
     }),
@@ -252,6 +266,8 @@ export const {
 
   useCreateBatchWribateMutation,
 
+  useAddUserMutation,
+  useUpdateUserMutation,
   useGetUsersQuery,
 
   useAddCountryMutation,

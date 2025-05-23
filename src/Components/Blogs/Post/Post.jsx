@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import Toastify from '../../../utils/Toast';
 
 export default function SimpleBlogPost() {
     const editBlog = useSelector((state) => state.blog.currentBlog);;
@@ -44,15 +45,19 @@ export default function SimpleBlogPost() {
 
         try {
             setIsSubmitting(true);
-
-            const res = await axios.post(process.env.NEXT_PUBLIC_APP_BASE_URL + '/blog',{
+            const token = localStorage.getItem("token")
+            const res = await axios.post(process.env.NEXT_PUBLIC_APP_BASE_URL + '/admin/addBlog',{
                 title,
                 content,
                 author_id: userId,
                 image: imagePreview,
                 id:editBlog?._id || null
-            }, {
-                withCredentials: true
+            }, 
+            { 
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                withCredentials: true 
             });
 
             const data = res.data;
@@ -63,7 +68,8 @@ export default function SimpleBlogPost() {
             }
         } catch (err) {
             console.error(err);
-            toast.error("Failed to publish post. Please try again.");
+            console.log(err.response.data)
+            Toastify(err.response.data.message || "Failed to publish post.", "warn")
         } finally {
             setIsSubmitting(false);
         }
@@ -142,7 +148,7 @@ export default function SimpleBlogPost() {
 
                             <div className="space-y-2">
                                 <Label htmlFor="image" className="text-sm font-medium">
-                                    Featured Image
+                                    Featured Image <span className="text-red-500">*</span>
                                 </Label>
                                 <Input
                                     id="image"

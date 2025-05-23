@@ -10,6 +10,8 @@ import { FaBell } from "react-icons/fa";
 import Header from "./Header";
 import { useGetProfileQuery } from "../app/services/authApi";
 import { FileText, FileStack, Database, Tags, UserCheck, MapPin, SquareChartGantt } from "lucide-react";
+import { useDispatch } from "react-redux";
+import {setCredentials} from "../app/features/authSlice"
 
 const SideNavbar = ({ children }) => {
   const [expanded, setExpanded] = useState(false);
@@ -21,6 +23,7 @@ const SideNavbar = ({ children }) => {
   const buttonRef = useRef(null);
   const [expandedMaserData, setExpandedMasterData] = useState(false);
   const [hasValidToken, setHasValidToken] = useState(false)
+  const dispatch = useDispatch()
 
   const { data, isLoading, error } = useGetProfileQuery();
   const toggleSidebar = () => {
@@ -44,6 +47,7 @@ const SideNavbar = ({ children }) => {
           router.push('/signin')
         }
         setHasValidToken(true)
+        dispatch(setCredentials(res.data?.data))
       }
       catch (error) {
         console.error('Token validation failed:', error)

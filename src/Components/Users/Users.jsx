@@ -6,8 +6,10 @@ import {
 } from "../../app/services/authApi";
 import Toastify from "../../utils/Toast";
 import { Button } from "../../Components/ui/button";
-import { PlusCircle } from "lucide-react";
+import { ChevronsLeftIcon, PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import {setCurrentUser, clearUser} from '../../app/features/userSlice'
 
 export default function UsersTable() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -19,6 +21,7 @@ export default function UsersTable() {
   const [accessDropdown, setAccessDropdown] = useState(null);
   const dropdownRef = useRef(null);
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const { data: usersData, isLoading, error, refetch } = useGetUsersQuery();
 
@@ -165,7 +168,7 @@ export default function UsersTable() {
   const handleRoleChange = async (userId, newRole) => {
     try {
       const updatedUser = {
-        userName: userId,
+        id: userId,
         userRole: newRole,
       };
 
@@ -232,6 +235,27 @@ export default function UsersTable() {
         return "text-gray-700";
     }
   };
+
+  const handleAddUser = () =>{
+    dispatch(clearUser())
+    router.push("/users/manage-user")
+  }
+
+  const handleEdit = (user) =>{
+    if (user){
+      console.log(user)
+      dispatch(setCurrentUser(user))
+      router.push("/users/manage-user")
+    }
+    else {
+      Swal.fire(
+        "Error!",
+        "user not found.",
+        "error"
+      );
+      console.error("user not found");
+    }
+  }
 
   if (isLoading) {
     return (
@@ -315,7 +339,7 @@ export default function UsersTable() {
             </svg>
           </div>
         </div>
-        <Button onClick={() => router.push("/users/add-user")}
+        <Button onClick={handleAddUser}
           className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
         >
           <PlusCircle size={18} className="mr-1" />
@@ -450,7 +474,7 @@ export default function UsersTable() {
                         <div className="py-1">
                           <button
                             onClick={() =>
-                              handleRoleChange(user.userName, "user")
+                              handleRoleChange(user._id, "user")
                             }
                             className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
                               user.userRole === "user"
@@ -462,7 +486,7 @@ export default function UsersTable() {
                           </button>
                           <button
                             onClick={() =>
-                              handleRoleChange(user.userName, "admin")
+                              handleRoleChange(user._id, "admin")
                             }
                             className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
                               user.userRole === "admin"
@@ -474,7 +498,7 @@ export default function UsersTable() {
                           </button>
                           <button
                             onClick={() =>
-                              handleRoleChange(user.userName, "agent")
+                              handleRoleChange(user._id, "agent")
                             }
                             className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
                               user.userRole === "editor"
@@ -486,7 +510,7 @@ export default function UsersTable() {
                           </button>
                           <button
                             onClick={() =>
-                              handleRoleChange(user.userName, "premium "+user.userRole)
+                              handleRoleChange(user._id, "premium "+user.userRole)
                             }
                             className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
                               user.userRole === "editor"
@@ -535,6 +559,12 @@ export default function UsersTable() {
                         className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200"
                       >
                         <div className="py-1">
+                          <button
+                            onClick={() => handleEdit(user)}
+                            className="block w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100"
+                          >
+                            Edit
+                          </button>
                           {user.status !== 2 && (
                             <button
                               onClick={() => handleStatusChange(user._id, 2)}

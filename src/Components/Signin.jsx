@@ -22,10 +22,12 @@ const SigninPage = () => {
     var firebaseToken = null;
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential?.user || null;
-      firebaseToken = user?.accessToken || null;
+      firebaseToken = await userCredential.user.getIdToken();
     } catch (err) {
-      
+      const errorCode = err.code;
+      if (errorCode === 'auth/wrong-password') {
+        throw new Error('Invalid password');
+      }
     }
 
     const data = { email, password, firebaseToken };
@@ -45,7 +47,7 @@ const SigninPage = () => {
       dispatch(setCredentials(response));
 
       Toast("Signin successful!", "success");
-      router.push("/");
+      window.location.href = "/"
     } catch (err) {
       // Handle error - e.g., show error message
       console.error("Signin Failed:", err);

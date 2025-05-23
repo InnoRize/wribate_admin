@@ -89,7 +89,7 @@ export default function SubscriptionForm() {
                 if (response.data.status) {
                     Toastify("Subscription created successfully","success");
                     dispatch(clearSubscription());
-                    router.push("/subscriptions");
+                    window.location.href = "/subscriptions"
                 } else {
                     Toastify(response?.data?.msg || "Error creating subscription","warn");
                 }
@@ -112,7 +112,7 @@ export default function SubscriptionForm() {
                 if (!response.error && response.data.status) {
                     Toastify("Subscription edited successfully","success");
                     dispatch(clearSubscription());
-                    router.push("/subscriptions");
+                   window.location.href = "/subscriptions"
                 } else {
                     Toastify(response?.data?.msg|| response.error.data.message || "Error editing subscription","warn");
                 }
@@ -128,7 +128,7 @@ export default function SubscriptionForm() {
     const handleCancel = () => {
         dispatch(clearSubscription());
         setErrors({});
-        router.push("/subscriptions");
+        window.location.href = "/subscriptions"
     };
 
     return (
