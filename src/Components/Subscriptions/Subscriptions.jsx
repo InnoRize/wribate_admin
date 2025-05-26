@@ -295,15 +295,15 @@ export default function SubscriptionsTable() {
                     {sub.duration + " " + sub.pricePerDuration}
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-900 ">
-                    <div className="hover:cursor-pointer flex justify-start">
-                      <Eye onClick={() => setModalData({
+                    <div className="hover:cursor-pointer flex justify-start"
+                      onClick={() => setModalData({
                         name:sub.name,
                         description: sub.description,
                         cost: sub.currency + " " + sub.price + "/" + sub.pricePerDuration
                         
                       })}
-                      className = "mr-1"
-                      />
+                    >
+                      <Eye className = "mr-1" />
                       <div>
                         View
                       </div>

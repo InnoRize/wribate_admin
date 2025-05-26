@@ -146,6 +146,11 @@ export default function PagesTable() {
     router.push("/pages/manage-page")
   }
 
+  const handleFullView = (page) =>{
+    dispatch(setCurrentPage(page))
+    router.push("/pages/view-page")
+  }
+
   if (isLoading) {
     return (
       <div className="bg-white p-6 rounded-lg shadow-sm flex justify-center items-center h-64">
@@ -270,17 +275,32 @@ export default function PagesTable() {
                     {page.name || "N/A"}
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-900 ">
-                    <div className="hover:cursor-pointer flex justify-start">
-                      <Eye onClick={() => setModalData({
-                        name:page.name,
-                        description: page.description,
-                      })}
-                      className = "mr-1"
-                      />
-                      <div>
-                        View
+                    <div className="flex flex-row ">
+                      <div className="hover:cursor-pointer flex justify-start 
+                        border rounded w-fit bg-green-100 mr-3"
+                        onClick={() => setModalData({
+                          name:page.name,
+                          description: page.description,
+                        })}
+                      >
+                        <Eye className = "pl-1 size-7" />
+                        <div className="px-2 self-center">
+                          Preview
+                        </div>
                       </div>
-                    </div>
+                      <div className="hover:cursor-pointer flex justify-start 
+                      border rounded w-fit bg-green-100"
+                        onClick={() => handleFullView({
+                          name:page.name,
+                          description: page.description,
+                        })}
+                      >
+                        <Eye className = "pl-1 size-7" />
+                        <div className="px-2 self-center">
+                          Full View
+                        </div>
+                      </div>
+                    </div>   
                   </td>
                   <td className="px-4 py-4 text-right text-sm font-medium relative">
                     <button
@@ -328,8 +348,8 @@ export default function PagesTable() {
 
       {/* Modal for Viewing Description */}
       {modalData && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md ">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 ">
+          <div className="bg-white rounded-lg p-6 w-4/5 ">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold">
                 {modalData.name}: Description
@@ -347,7 +367,7 @@ export default function PagesTable() {
                 </svg>
               </button>
             </div>
-            <div className="mb-4 max-h-[80vh] overflow-y-auto">
+            <div className="max-h-[80vh] overflow-y-auto ">
               <DisplayPage description={modalData.description} />
               {/* <Description description={modalData.description} disableEdit={true}/>          */}
             </div>

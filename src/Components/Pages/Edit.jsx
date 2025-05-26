@@ -120,7 +120,7 @@ export default function PageForm() {
 
     return (
         <div className="content-center">
-            <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow mt-8">
+            <div className="w-4/5 mx-auto p-6 bg-white rounded-lg shadow mt-8">
                 <h2 className="text-xl font-semibold mb-4">{creatNew?"New":"Edit"} Page</h2>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-sm">     
                     <div className="flex flex-row">
