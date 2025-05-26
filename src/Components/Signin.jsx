@@ -25,8 +25,10 @@ const SigninPage = () => {
       firebaseToken = await userCredential.user.getIdToken();
     } catch (err) {
       const errorCode = err.code;
-      if (errorCode === 'auth/wrong-password') {
-        throw new Error('Invalid password');
+      console.error("Firebase Signin Error:", err);
+      if (errorCode !== 'auth/user-not-found') {
+        Toast(err?.message||"Firebase Signin Failed.", "error");
+        return;
       }
     }
 
