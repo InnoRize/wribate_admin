@@ -92,7 +92,7 @@ export default function UserForm() {
         if (!formData.email) newErrors.email = "Required";
         if ((creatNew || (!creatNew && editPassword)) && !(formData.password.trim().length>=6)) 
             newErrors.password = "Required atleast 6 characters";
-        if ((creatNew || (!creatNew && editPassword)) && !(formData.newPassword.trim().length>=6)) 
+        if ((!creatNew && editPassword) && !(formData.newPassword.trim().length>=6)) 
             newErrors.newPassword = "Required atleast 6 characters";
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;

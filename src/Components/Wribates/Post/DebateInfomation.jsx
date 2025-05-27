@@ -83,7 +83,7 @@ const SearchableDropdown = ({ id, name, value, onChange, options, placeholder, r
           )}
         </div>
         {value && !isOpen && (
-          <button onClick={handleClear} className="text-gray-400 hover:text-gray-600">
+          <button type="button" onClick={handleClear} className="text-gray-400 hover:text-gray-600">
             <X size={16} />
           </button>
         )}

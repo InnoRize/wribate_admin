@@ -114,6 +114,13 @@ export const authApi = baseApi.injectEndpoints({
         body: data,
       }),
     }),
+    updateWribate: builder.mutation({
+      query: ({id, wribateData}) => ({
+        url: `/admin/updateWribate/${id}`,
+        method: "PATCH",
+        body: wribateData,
+      }),
+    }),
     deleteWribate: builder.mutation({
       query: (id) => ({
         url: `/admin/deleteWribate/${id}`,
@@ -259,6 +266,7 @@ export const {
   useGetProfileQuery,
   useUploadImageMutation,
   useCreateWribateMutation,
+  useUpdateWribateMutation,
   useDeleteWribateMutation,
 
   useGetMyWribatesByCategoryQuery,

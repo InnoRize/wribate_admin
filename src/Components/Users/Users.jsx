@@ -6,7 +6,7 @@ import {
 } from "../../app/services/authApi";
 import Toastify from "../../utils/Toast";
 import { Button } from "../../Components/ui/button";
-import { ChevronsLeftIcon, PlusCircle } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import {setCurrentUser, clearUser} from '../../app/features/userSlice'
