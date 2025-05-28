@@ -11,7 +11,11 @@ export default {
         accent: "#F97316", // Add an accent color
         neutral: "#64748B", // Add a neutral color
       },
-    },
+      listStyleType: {
+        disc: 'disc',
+        decimal: 'decimal',
+      },
+    }
   },
   plugins: [
     scrollbarHide,

@@ -39,6 +39,20 @@ export const authApi = baseApi.injectEndpoints({
     getProfile: builder.query({
       query: () => `/user/getProfile`,
     }),
+    addUser: builder.mutation({
+      query: ({ newUser }) => ({
+        url: `/admin/addUser`,
+        method: "POST",
+        body: newUser,
+      }),
+    }),
+    updateUser: builder.mutation({
+      query: ({ id, updatedUser }) => ({
+        url: `/admin/updateUser/${id}`,
+        method: "PATCH",
+        body: updatedUser,
+      }),
+    }),
     getUsers: builder.query({
       query: () => `/admin/getUsers`,
     }),
@@ -100,6 +114,13 @@ export const authApi = baseApi.injectEndpoints({
         body: data,
       }),
     }),
+    updateWribate: builder.mutation({
+      query: ({id, wribateData}) => ({
+        url: `/admin/updateWribate/${id}`,
+        method: "PATCH",
+        body: wribateData,
+      }),
+    }),
     deleteWribate: builder.mutation({
       query: (id) => ({
         url: `/admin/deleteWribate/${id}`,
@@ -155,14 +176,76 @@ export const authApi = baseApi.injectEndpoints({
         method: "DELETE",
       }),
     }),
-    getHtmlContent: builder.query({
-      query: ({ type, name }) => `/admin/getHtmlContent/${type}/${name}`,
-    }),
-    updateHtmlContent: builder.mutation({
-      query: ({ id, data }) => ({
-        url: `/admin/updateHtmlContent/${id}`,
+    addRole: builder.mutation({
+      query: ({ newRole }) => ({
+        url: `/admin/addRole`,
         method: "POST",
-        body: data,
+        body: newRole,
+      }),
+    }),
+    getRoles: builder.query({
+      query: () => `/admin/getRoles`,
+    }),
+    updateRole: builder.mutation({
+      query: ({ id, updatedRole }) => ({
+        url: `/admin/updateRole/${id}`,
+        method: "PATCH",
+        body: updatedRole,
+      }),
+    }),
+    deleteRole: builder.mutation({
+      query: (id) => ({
+        url: `/admin/deleteRole/${id}`,
+        method: "DELETE",
+      }),
+    }),
+    addSubscription: builder.mutation({
+      query: ({ newSubscription }) => ({
+        url: `/admin/addSubscription`,
+        method: "POST",
+        body: newSubscription,
+      }),
+    }),
+    getSubscriptions: builder.query({
+      query: () => `/admin/getSubscriptions`,
+    }),
+    updateSubscription: builder.mutation({
+      query: ({ id, updatedSubscription }) => ({
+        url: `/admin/updateSubscription/${id}`,
+        method: "PATCH",
+        body: updatedSubscription,
+      }),
+    }),
+    deleteSubscription: builder.mutation({
+      query: (id) => ({
+        url: `/admin/deleteSubscription/${id}`,
+        method: "DELETE",
+      }),
+    }),
+    addPage: builder.mutation({
+      query: ({newPage }) => ({
+        url: `/admin/addPage`,
+        method: "POST",
+        body: newPage,
+      }),
+    }),
+    getPage: builder.query({
+      query: ({ name }) => `/admin/getPage/${name}`,
+    }),
+    getAllPages: builder.query({
+      query: () => `/admin/getAllPages`,
+    }),
+    updatePage: builder.mutation({
+      query: ({ id, updatedPage }) => ({
+        url: `/admin/updatePage/${id}`,
+        method: "POST",
+        body: updatedPage,
+      }),
+    }),
+    deletePage: builder.mutation({
+      query: ({ id, }) => ({
+        url: `/admin/deletePage/${id}`,
+        method: "DELETE",
       }),
     }),
   }),
@@ -183,6 +266,7 @@ export const {
   useGetProfileQuery,
   useUploadImageMutation,
   useCreateWribateMutation,
+  useUpdateWribateMutation,
   useDeleteWribateMutation,
 
   useGetMyWribatesByCategoryQuery,
@@ -190,6 +274,8 @@ export const {
 
   useCreateBatchWribateMutation,
 
+  useAddUserMutation,
+  useUpdateUserMutation,
   useGetUsersQuery,
 
   useAddCountryMutation,
@@ -197,6 +283,20 @@ export const {
   useDeleteCountryMutation,
   useGetCountriesQuery,
 
-  useGetHtmlContentQuery,
-  useUpdateHtmlContentMutation,
+  useAddRoleMutation,
+  useUpdateRoleMutation,
+  useDeleteRoleMutation,
+  useGetRolesQuery,
+
+  useAddSubscriptionMutation,
+  useUpdateSubscriptionMutation,
+  useDeleteSubscriptionMutation,
+  useGetSubscriptionsQuery,
+
+  useAddPageMutation,
+  useDeletePageMutation,
+  useGetPageQuery,
+  useGetAllPagesQuery,
+  useUpdatePageMutation,
+
 } = authApi;

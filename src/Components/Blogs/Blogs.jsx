@@ -12,9 +12,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 const Blogs = () => {
-  const {userId} = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  console.log("userId",userId)
   const router = useRouter();
   const [blogs, setBlogs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -22,10 +20,17 @@ const Blogs = () => {
 
   useEffect(() => {
     const fetchBlogs = async () => {
+      const token = localStorage.getItem("token")
       try {
         setIsLoading(true);
         const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_APP_BASE_URL}/blogs`,
+          `${process.env.NEXT_PUBLIC_APP_BASE_URL}/admin/getBlogs`,
+          { 
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          withCredentials: true 
+        }
         );
 
         const data = res.data;
@@ -40,10 +45,8 @@ const Blogs = () => {
       }
     };
 
-    if (userId) {
-      fetchBlogs();
-    }
-  }, [userId]);
+    fetchBlogs();
+  }, []);
 
   const filteredBlogs = blogs.filter((blog) =>
     blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -55,20 +58,6 @@ const Blogs = () => {
     router.push('blogs/post-blog');
   };
 
-  if (!userId) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-50">
-        <Card className="w-full max-w-md p-6">
-          <CardContent className="text-center">
-            <p className="mb-4">Please log in to access your blogs.</p>
-            <Button className="text-white" onClick={() => router.push('/signin')}>
-              Go to Signin
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -151,9 +140,15 @@ const BlogCard = ({ blog, setBlogs }) => {
   const handleDelete = async (id) => {
     try {
       setIsDeleting(true);
+      const token = localStorage.getItem("token")
       const res = await axios.delete(
-        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/blog/${id}`,
-        { withCredentials: true }
+        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/deleteBlog/${id}`,
+        { 
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          withCredentials: true 
+        }
       );
 
       const data = res.data;

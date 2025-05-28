@@ -4,6 +4,9 @@ import { baseApi } from "./services/baseApi";
 import authSlice from "./features/authSlice";
 import blogSlice from "./features/blogSlice";
 import wribateSlice from "./features/wribateSlice";
+import subscriptionSlice from "./features/subscriptionSlice";
+import pageSlice from "./features/pageSlice"
+import userSlice from "./features/userSlice"
 // import storeSlice from "./services/storeSlice";
 
 export const store = configureStore({
@@ -12,6 +15,9 @@ export const store = configureStore({
     // store: storeSlice,
     blog: blogSlice,
     wribate: wribateSlice,
+    subscription: subscriptionSlice,
+    page: pageSlice,
+    user: userSlice,
     [baseApi.reducerPath]: baseApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
