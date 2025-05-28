@@ -8,8 +8,10 @@ import {
   useDeleteRoleMutation,
 } from "../../app/services/authApi";
 import Swal from "sweetalert2";
+import { useSelector } from "react-redux";
 
 export default function RolesList() {
+  const {userRole} = useSelector((state) => state.auth)
   const [roles, setRoles] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [roleName, setRoleName] = useState("");
@@ -143,6 +145,7 @@ export default function RolesList() {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Roles ({roles.length})</h1>
+        {userRole.toLowerCase() === 'admin' &&
         <button
           className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md flex items-center"
           onClick={handleAddRole}
@@ -162,7 +165,7 @@ export default function RolesList() {
             ></path>
           </svg>
           Add Role
-        </button>
+        </button>}
       </div>
 
       {roles.length === 0 ? (
@@ -185,6 +188,7 @@ export default function RolesList() {
                       {role.roleName}
                     </span>
                   </div>
+                  {userRole.toLowerCase() === 'admin' &&
                   <div className="relative">
                     <button
                       className="text-gray-400 hover:text-gray-600"
@@ -223,7 +227,7 @@ export default function RolesList() {
                         </ul>
                       </div>
                     )}
-                  </div>
+                  </div>}
                 </div>
               </div>
             ))}
@@ -231,7 +235,8 @@ export default function RolesList() {
       )}
 
       {/* Modal for Add/Edit Role */}
-      {showModal && (
+      {userRole.toLowerCase() === 'admin' &&
+      showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <div className="flex justify-between items-center mb-4">

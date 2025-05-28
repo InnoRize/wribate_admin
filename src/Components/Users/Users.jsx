@@ -8,7 +8,7 @@ import Toastify from "../../utils/Toast";
 import { Button } from "../../Components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {setCurrentUser, clearUser} from '../../app/features/userSlice'
 
 export default function UsersTable() {
@@ -22,6 +22,7 @@ export default function UsersTable() {
   const dropdownRef = useRef(null);
   const router = useRouter();
   const dispatch = useDispatch();
+  const {userRole} = useSelector((state) => state.auth)
 
   const { data: usersData, isLoading, error, refetch } = useGetUsersQuery();
 
@@ -339,12 +340,13 @@ export default function UsersTable() {
             </svg>
           </div>
         </div>
+        {userRole.toLowerCase() === 'admin' &&
         <Button onClick={handleAddUser}
           className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
         >
           <PlusCircle size={18} className="mr-1" />
             Add User
-        </Button>
+        </Button>}
       </div>
 
       {/* Table */}
@@ -447,6 +449,7 @@ export default function UsersTable() {
                   <td className="px-4 py-4 text-sm text-gray-900 relative">
                     <button
                       onClick={() => handleAccessClick(user._id)}
+                      disabled={userRole.toLowerCase() !== 'admin'}
                       className="flex items-center justify-between w-full p-1 hover:bg-gray-100 rounded"
                     >
                       <span>{user.userRole? (user.subscription.isActive? "premium " : "") + user.userRole : "user"}</span>
@@ -466,7 +469,8 @@ export default function UsersTable() {
                       </svg>
                     </button>
 
-                    {accessDropdown === user._id && (
+                    {userRole.toLowerCase() === 'admin' &&
+                    accessDropdown === user._id && (
                       <div
                         ref={dropdownRef}
                         className="absolute mt-1 w-36 bg-white rounded-md shadow-lg z-10 border border-gray-200"
@@ -539,59 +543,62 @@ export default function UsersTable() {
                     </span>
                   </td>
                   <td className="px-4 py-4 text-right text-sm font-medium relative">
-                    <button
-                      onClick={() => handleActionsClick(user._id)}
-                      className="text-gray-400 hover:text-gray-900"
-                    >
-                      <svg
-                        className="w-5 h-5"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
+                    {userRole.toLowerCase() === 'admin' &&
+                      <div>
+                      <button
+                        onClick={() => handleActionsClick(user._id)}
+                        className="text-gray-400 hover:text-gray-900"
                       >
-                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
-                      </svg>
-                    </button>
+                        <svg
+                          className="w-5 h-5"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                        </svg>
+                      </button>
 
-                    {activeDropdown === user._id && (
-                      <div
-                        ref={dropdownRef}
-                        className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200"
-                      >
-                        <div className="py-1">
-                          <button
-                            onClick={() => handleEdit(user)}
-                            className="block w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100"
-                          >
-                            Edit
-                          </button>
-                          {user.status !== 2 && (
+                      {activeDropdown === user._id && (
+                        <div
+                          ref={dropdownRef}
+                          className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200"
+                        >
+                          <div className="py-1">
                             <button
-                              onClick={() => handleStatusChange(user._id, 2)}
-                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                              onClick={() => handleEdit(user)}
+                              className="block w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100"
                             >
-                              Deactivate
+                              Edit
                             </button>
-                          )}
-                          {user.status !== 1 && user.status !== 3 && (
-                            <button
-                              onClick={() => handleStatusChange(user._id, 1)}
-                              className="block w-full text-left px-4 py-2 text-sm text-green-600 hover:bg-gray-100"
-                            >
-                              Activate
-                            </button>
-                          )}
-                          {user.status !== 3 && (
-                            <button
-                              onClick={() => handleStatusChange(user._id, 3)}
-                              className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                            >
-                              Delete
-                            </button>
-                          )}
+                            {user.status !== 2 && (
+                              <button
+                                onClick={() => handleStatusChange(user._id, 2)}
+                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                              >
+                                Deactivate
+                              </button>
+                            )}
+                            {user.status !== 1 && user.status !== 3 && (
+                              <button
+                                onClick={() => handleStatusChange(user._id, 1)}
+                                className="block w-full text-left px-4 py-2 text-sm text-green-600 hover:bg-gray-100"
+                              >
+                                Activate
+                              </button>
+                            )}
+                            {user.status !== 3 && (
+                              <button
+                                onClick={() => handleStatusChange(user._id, 3)}
+                                className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                              >
+                                Delete
+                              </button>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>}
                   </td>
                 </tr>
               ))

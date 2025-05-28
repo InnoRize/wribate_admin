@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import {
@@ -21,9 +21,13 @@ export default function UserForm() {
     const [isLoading, setIsLoading] = useState(false);
     const [userId, setUserId] = useState()
     const [countryOptions, setCountryOptions] = useState([]);
+    const [roleOptions, setRoleOptions] = useState([]);
+    const [subOptions, setSubOptions] = useState([]);
     const [showPassword, setShowPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [editPassword, setEditPassword] = useState(false);
+    const [isRolesOpen, setIsRolesOpen] = useState(false);
+    const dropdownRef = useRef(null);
 
     const [addUser, { isLoading: isAdding }] = useAddUserMutation();
     const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
@@ -33,7 +37,9 @@ export default function UserForm() {
         email: "",
         password: "",
         country: "",
-        newPassword: ""
+        newPassword: "",
+        roles: [],
+        subscription: "",
     });
     const editUser = useSelector((state) => state.user.currentUser);
 
@@ -58,17 +64,77 @@ export default function UserForm() {
                 console.error(err);
             }
         }
+        async function getRoles() {
+            try{
+                const token = localStorage.getItem("token")
+                const res = await axios.get(
+                    process.env.NEXT_PUBLIC_APP_BASE_URL + '/admin/getRoles',
+                    { 
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        withCredentials: true 
+                    }
+                )
+                const roles = res.data.roles
+                if(roles){
+                    setRoleOptions(roles)
+                }
+            }catch (err) {
+                console.error(err);
+            }
+        }
+        async function getSubscription() {
+            try{
+                const token = localStorage.getItem("token")
+                const res = await axios.get(
+                    process.env.NEXT_PUBLIC_APP_BASE_URL + '/admin/getSubscriptions',
+                    { 
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        withCredentials: true 
+                    }
+                )
+                const subscriptions = res.data.subscriptions
+                if(subscriptions){
+                    setSubOptions(subscriptions)
+                }
+            }catch (err) {
+                console.error(err);
+            }
+        }
         getCountries()
+        getRoles()
+        getSubscription()
+
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsRolesOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside)
     }, [])
 
     useEffect(()=>{
-        if (editUser){
+        if (editUser && roleOptions){
+            console.log()
+            let rolesList = editUser?.roles || []
+            for (let i = 0; i < rolesList.length; i++){
+                const roleName = roleOptions.find(role => role._id == rolesList[i]._id)?.roleName
+                rolesList[i].roleName = roleName
+            }
+            
             setFormData({
                 name: editUser?.name || "",
                 email: editUser?.email || "",
                 password: "",
                 newPassword: "",
                 country: editUser?.country || "",
+                subscription: editUser?.subscription || "",
+                roles: rolesList
             })
             setUserId(editUser._id)
         }
@@ -87,6 +153,22 @@ export default function UserForm() {
         }));
     };
 
+    // Add role
+    const addRole = (role) => {
+        setFormData(prev => ({
+            ...prev,
+            roles: [...prev.roles, role]
+        }));
+    };
+
+    // Remove role
+    const removeRole = (roleToRemove) => {
+        setFormData(prev => ({
+            ...prev,
+            roles: prev.roles.filter(role => role !== roleToRemove)
+        }));
+    };
+
     const validate = () => {
         const newErrors = {};
         if (!formData.email) newErrors.email = "Required";
@@ -94,6 +176,7 @@ export default function UserForm() {
             newErrors.password = "Required atleast 6 characters";
         if ((!creatNew && editPassword) && !(formData.newPassword.trim().length>=6)) 
             newErrors.newPassword = "Required atleast 6 characters";
+        if (formData.roles.length <=0) newErrors.roles = "Required atleast 1"
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -251,7 +334,6 @@ export default function UserForm() {
                                     <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    disabled={!editPassword}
                                     className={`text-gray-600 rounded hover:text-gray-500 focus:outline-none bg-white`}
                                     >
                                     {showPassword ? (
@@ -364,6 +446,69 @@ export default function UserForm() {
                             {countryOptions?.map((country) => (
                                 <option key={country._id} value={country.countryName}>
                                     {country.countryName}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block font-medium mt-4">Roles</label>
+                        <div className="relative" ref={dropdownRef} >
+                            {/* Input field with tags */}
+                            <div 
+                                className="w-full mt-1 min-h-[42px] p-1 border rounded flex flex-wrap items-center gap-1 cursor-text"
+                                onClick={() => setIsRolesOpen(true)}
+                            >
+                                {/* Selected tags */}
+                                {formData.roles.map((role, index) => (
+                                    <span
+                                        key={index}
+                                        className="inline-flex items-center gap-1 px-2 py-1 text-sm bg-blue-100 text-blue-800 rounded-md"
+                                    >
+                                        {role.roleName}
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                removeRole(role);
+                                            }}
+                                            className="hover:text-blue-600 focus:outline-none"
+                                        >
+                                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    </span>
+                                ))}
+                            </div>
+                            {/* Dropdown */}
+                            {isRolesOpen && roleOptions?.length > 0 && (
+                                <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-auto">
+                                    {roleOptions.map((role) => (
+                                        <div
+                                            key={role._id}
+                                            onClick={() => addRole(role)}
+                                            className="px-3 py-2 hover:bg-gray-100 cursor-pointer transition-colors"
+                                        >
+                                            {role.roleName}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        {errors.roles && <span className="text-red-500 text-xs">{errors.roles}</span>}
+                    </div>
+                    <div>
+                        <label className="block font-medium mt-4">Subscription</label>
+                        <select
+                            name="subscription"
+                            value={formData.subscription}
+                            onChange={handleChange}
+                            className="w-full mt-1 p-1 border rounded"
+                        >
+                            <option value="">Select a subscription</option>
+                            {subOptions?.map((sub) => (
+                                <option key={sub._id} value={sub._id}>
+                                    {sub.name}
                                 </option>
                             ))}
                         </select>
