@@ -6,8 +6,8 @@ export default function Dashboard() {
   // Sample data for dashboard metrics
 
   const { data, isLoading, error } = useGetDashboardQuery({
-    startDate: "2025-04-24",
-    endDate: "2025-05-25",
+    startDate: "2024-04-23",
+    endDate: null,
   });
 
   const [metrics, setMetrics] = useState({
@@ -51,7 +51,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (data && data.status && data.status === "success") {
-      // console.log("data", data.data);
+      console.log("data userStatusCounts;\n", data.data.userStatusCounts);
 
       let activeUsers = 0 
       if (data.data.userStatusCounts) {
@@ -181,7 +181,7 @@ export default function Dashboard() {
                 <div className="text-2xl font-bold">{data.value}</div>
                 {data.change && (
                   <div className="text-sm font-medium">
-                    {data.change} than yesterday
+                    {data.change} than {period == "Today"?"yesterday":"last "+period.slice(0,-2)?.toLowerCase()}
                   </div>
                 )}
               </div>

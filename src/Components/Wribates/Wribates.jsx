@@ -7,15 +7,13 @@ import {
 import { Button } from '../../Components/ui/button';
 import { PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent } from '../../Components/ui/card';
 import { useSelector, useDispatch } from "react-redux";
 import { setCurrentWribate, clearWribate } from "../../app/features/wribateSlice";
 import Swal from "sweetalert2";
-import Toastify from "../../utils/Toast";
 
 export default function Wribates() {
-  const {userId} = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const {userRole, userId} = useSelector((state) => state.auth)
 
   // Table state management
   const [searchQuery, setSearchQuery] = useState("");
@@ -106,16 +104,26 @@ export default function Wribates() {
 
       // Filter wribates based on search query
       const filtered = processedWribates.filter((wribate) => {
-        if (!searchQuery) return true; // If no search query, include all wribates
+        // if (!searchQuery) return true; // If no search query, include all wribates
 
         const searchLower = searchQuery.toLowerCase();
         return (
-          wribate.title?.toLowerCase().includes(searchLower) ||
-          wribate.category?.toLowerCase().includes(searchLower) ||
-          wribate.institution?.toLowerCase().includes(searchLower) ||
-          wribate._id?.includes(searchQuery) ||
-          wribate.statusType.some((status) =>
-            status.toLowerCase().includes(searchLower)
+          // Filtering out based on userRole
+          (
+            userRole?.toLowerCase()==='admin' || 
+            (wribate.createdBy && wribate.createdBy == userId)
+          )
+          &&(
+            (!searchQuery)
+            &&(
+              wribate.title?.toLowerCase().includes(searchLower) ||
+              wribate.category?.toLowerCase().includes(searchLower) ||
+              wribate.institution?.toLowerCase().includes(searchLower) ||
+              wribate._id?.includes(searchQuery) ||
+              wribate.statusType.some((status) =>
+                status.toLowerCase().includes(searchLower)
+              )
+            )
           )
         );
       });
@@ -261,36 +269,19 @@ export default function Wribates() {
   };
 
   const handleEdit = (wribate) => {
-    // TODO: Implement edit functionality
-    // if (wribate) {
-    //   console.log("Editing wribate:", wribate);
-    //   dispatch(setCurrentWribate(wribate));
-    //   router.push(`/wribates/post-wribate`);
-    // }
-    // else {
-    //   Swal.fire(
-    //     "Error!",
-    //     "Wribate not found.",
-    //     "error"
-    //   );
-    //   console.error("Wribate not found");
-    // }
+    if (wribate) {
+      dispatch(setCurrentWribate(wribate));
+      router.push(`/wribates/post-wribate`);
+    }
+    else {
+      Swal.fire(
+        "Error!",
+        "Wribate not found.",
+        "error"
+      );
+      console.error("Wribate not found");
+    }
   };
-
-  if (!userId) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-50">
-        <Card className="w-full max-w-md p-6">
-          <CardContent className="text-center">
-            <p className="mb-4">Please log in to access your blogs.</p>
-            <Button className="text-white" onClick={() => router.push('/signin')}>
-              Go to Signin
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   if (categoriesLoading) {
     return (
@@ -356,7 +347,7 @@ export default function Wribates() {
         <h3 className="text-lg font-semibold mb-2">Categories</h3>
         <div className="overflow-x-auto pb-2">
           <div className="flex space-x-2 whitespace-nowrap">
-            {[{categoryName: categoryAllWribates, }, ...categoriesData?.catgories].map((category) => (
+            {[{categoryName: categoryAllWribates, _id: categoryAllWribates}, ...categoriesData?.catgories].map((category) => (
               <button
                 key={category._id}
                 onClick={() => handleCategoryChange(category.categoryName)}
@@ -537,7 +528,7 @@ export default function Wribates() {
                       {wribate.type || "N/A"}
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-900">
-                      {wribate.scope || "N/A"}
+                      {(wribate.scope === "Open"? "Open to All": wribate.scope) || "N/A"}
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-900 whitespace-pre-line">
                       {formatDate(wribate.startDate)}
@@ -576,8 +567,11 @@ export default function Wribates() {
                           className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200"
                         >
                           <div className="py-1">
-                            <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                              View Details
+                            <button onClick={() => 
+                              window.open(`${process.env.NEXT_PUBLIC_APP_BASE_MAIN_URL}/wribate/${wribate._id}`,'_blank')
+                            }
+                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                              View
                             </button>
                             <button onClick={() => handleEdit(wribate)}
                             className="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-100">

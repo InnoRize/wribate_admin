@@ -4,10 +4,12 @@ import {
   useGetCategoriesQuery,
   useGetCountriesQuery,
   useCreateWribateMutation,
+  useUpdateWribateMutation,
 } from "../../../app/services/authApi";
-import { Calendar, Info, Upload, Clock, Users, Award, Check, ChevronRight, BookOpen } from "lucide-react";
-import toast from "react-hot-toast";
+import { BookOpen } from "lucide-react";
+import Toastify from "../../../utils/Toast";
 import { useRouter } from "next/navigation";
+
 import getAuthHeader from "../../../utils/authHeader";
 import Compressor from 'compressorjs';
 import NavigationBar from './NavigationBar'
@@ -38,8 +40,10 @@ const SingleWribate = () => {
   const router = useRouter();
 
   const [createWribate, { isLoading: isCreating }] = useCreateWribateMutation();
+  const [updateWribate, { isLoading: isUpdating }] = useUpdateWribateMutation();
 
   const [creatNew, setCreatNew] = useState(false);
+  const [wribateId, setWribateId] = useState(null);
   const [formData, setFormData] = useState({
     title: "",
     coverImage:null,
@@ -67,11 +71,11 @@ const SingleWribate = () => {
   useEffect(() => {
 
     if (editWriabate) {
-      // setCurrentWriabate(editWriabate);
+      setWribateId(editWriabate._id);
       setFormData({
         title: editWriabate?.title || "",
         coverImage: editWriabate?.coverImage||null,
-        coverImageBase64: null,
+        coverImageBase64: editWriabate?.coverImage|| null,
         leadFor: editWriabate?.leadFor || "",
         leadAgainst: editWriabate?.leadAgainst || "",
         supportingFor: editWriabate?.supportingFor || "",
@@ -85,22 +89,19 @@ const SingleWribate = () => {
         country: editWriabate?.country || "",
         institution: editWriabate?.institution || "",
         context: editWriabate?.context || "",
-        scope: editWriabate?.scope || "Open",
+        scope: editWriabate?.scope || "Private",
         type: editWriabate?.type || "Free",
-        prizeAmount: editWriabate?.prizeAmount ||"",
+        prizeAmount: editWriabate?.prizeAmount ||0,
         _id: editWriabate?.createdBy || userId
       });
+      setImagePreview(editWriabate?.coverImage || null);
       setCreatNew(false);
     }
     else {
-      // setCurrentWriabate(null);
+      setWribateId(null);
       setCreatNew(true);
     }
   }, []);
-
-
-  // Shared class styles
-  const inputClass = "w-full p-3 border-0 border-b-2 border-gray-300 focus:outline-none focus:border-blue-900 text-sm transition-all duration-200 bg-gray-50";
 
   const [imagePreview, setImagePreview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -147,45 +148,67 @@ const SingleWribate = () => {
         wribateData.judges = [formData.judge1, formData.judge2, formData.judge3];
         delete wribateData.coverImage;
 
-        const istOffset = 5.5 * 60 * 60 * 1000;
-        const istDate = new Date(wribateData.startDate).getTime() + istOffset;
-        wribateData.startDate = new Date(istDate).toISOString();
-
-        // const response = await axios.post(
-        //   process.env.NEXT_PUBLIC_APP_BASE_URL + '/user/createWribate',
-        //   wribateData,
-        //   {
-        //     withCredentials: true,
-        //     headers: getAuthHeader()
-        //   }
-        // );
+        wribateData.startDate = new Date(wribateData.startDate).toISOString();
       
         const response = await createWribate(wribateData, {
           withCredentials: true,
           headers: getAuthHeader()
         });
 
-        if (response.data.res) {
-          toast.success("Wribate created successfully");
+        if (response.data.res === true) {
+          Toastify("Wribate created successfully", "success");
           dispatch(clearWribate());
-          router.push("/wribates");
+          window.location.href = '/wribates';
         } else {
-          toast.error(response?.data?.msg || "Error creating wribate");
+          Toastify(response?.data?.msg || "Error creating wribate", "error");
         }
       } catch (err) {
         console.error(err);
-        toast.error(err?.data?.message || err?.message || "Error creating wribate");
+        Toastify(err?.data?.message || err?.message || "Error creating wribate", "error");
       } finally {
         setIsLoading(false);
       }
     }
+    else if(wribateId) {
+      try {
+        let wribateData = { ...formData };
+        wribateData.judges = [formData.judge1, formData.judge2, formData.judge3];
+        delete wribateData.coverImage;
+
+        wribateData.startDate = new Date(wribateData.startDate).toISOString();
+        
+        const response = await updateWribate({id:wribateId, wribateData}, {
+          withCredentials: true,
+          headers: getAuthHeader()
+        });
+        console.log("Update Response:", response);
+
+        if (response?.data && response.data?.res===true) {
+          Toastify("Wribate created successfully", "success");
+          dispatch(clearWribate());
+          window.location.href = '/wribates';
+        } else {
+          Toastify(response?.data?.msg || response?.error?.data?.message || "Error creating wribate", "error");
+        }
+      } catch (err) {
+        console.error("Error while updating..",err);
+        Toastify(err?.data?.message || err?.message || "Error creating wribate", "error");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    else {
+      console.error("Wribate ID not found");
+      Toastify("Wribate ID not found.", "error");
+    }
+    setIsLoading(false);
   };
 
   return (
     <div className="w-full max-w-6xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Create New Wribate</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{creatNew?"Create New":"Edit"}  Wribate</h1>
           <p className="text-gray-600 mt-1">Set up your debate parameters, invite participants, and establish rules</p>
         </div>
         <button
@@ -215,7 +238,7 @@ const SingleWribate = () => {
 
             {/* Section 3: Settings & Schedule */}
             {currentSection === 3 && (
-             <Settings formData={formData} handleInputChange={handleInputChange} setCurrentSection={setCurrentSection}  handleToggleChange={handleToggleChange} isLoading={isLoading}/>
+             <Settings formData={formData} handleInputChange={handleInputChange} setCurrentSection={setCurrentSection}  handleToggleChange={handleToggleChange} isLoading={isLoading} creatNew={creatNew}/>
             )}
           </div>
         </form>

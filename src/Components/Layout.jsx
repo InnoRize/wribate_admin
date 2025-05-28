@@ -9,7 +9,9 @@ import { RiRefreshLine } from "react-icons/ri";
 import { FaBell } from "react-icons/fa";
 import Header from "./Header";
 import { useGetProfileQuery } from "../app/services/authApi";
-import { FileText, Handshake, Database, Tags, UserCheck, MapPin, SquareChartGantt, FolderLock } from "lucide-react";
+import { FileText, FileStack, Database, Tags, UserCheck, MapPin, SquareChartGantt } from "lucide-react";
+import { useDispatch } from "react-redux";
+import {setCredentials} from "../app/features/authSlice"
 
 const SideNavbar = ({ children }) => {
   const [expanded, setExpanded] = useState(false);
@@ -21,15 +23,12 @@ const SideNavbar = ({ children }) => {
   const buttonRef = useRef(null);
   const [expandedMaserData, setExpandedMasterData] = useState(false);
   const [hasValidToken, setHasValidToken] = useState(false)
+  const dispatch = useDispatch()
 
   const { data, isLoading, error } = useGetProfileQuery();
   const toggleSidebar = () => {
     setExpanded(!expanded);
   };
-
-  if (data) {
-    console.log(data);
-  }
 
   const toggleMobileMenu = () => {
     setMobileMenu(!mobileMenu);
@@ -48,6 +47,7 @@ const SideNavbar = ({ children }) => {
           router.push('/signin')
         }
         setHasValidToken(true)
+        dispatch(setCredentials(res.data?.data))
       }
       catch (error) {
         console.error('Token validation failed:', error)
@@ -313,29 +313,15 @@ const SideNavbar = ({ children }) => {
                 </li>
                 <li>
                   <Link
-                    href="/terms-conditions"
+                    href="/pages"
                     className={`flex items-center p-2 rounded-lg text-primary hover:bg-purple-100 ${
-                      location.pathname === "/privacy-terms" ? "bg-purple-100" : ""
+                      location.pathname === "/pages" ? "bg-purple-100" : ""
                     } ${expanded ? "justify-start" : "justify-center"}`}
                     onClick={handleLinkClick}
                   >
-                    <Handshake className="w-5 h-5" />
+                    <FileStack className="w-5 h-5" />
                     {expanded && (
-                      <span className="ml-3 whitespace-nowrap">Terms and Conditions</span>
-                    )}
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/privacy-policy"
-                    className={`flex items-center p-2 rounded-lg text-primary hover:bg-purple-100 ${
-                      location.pathname === "/privacy-terms" ? "bg-purple-100" : ""
-                    } ${expanded ? "justify-start" : "justify-center"}`}
-                    onClick={handleLinkClick}
-                  >
-                    <FolderLock className="w-5 h-5" />
-                    {expanded && (
-                      <span className="ml-3 whitespace-nowrap">Privacy Policy</span>
+                      <span className="ml-3 whitespace-nowrap">Pages</span>
                     )}
                   </Link>
                 </li>
@@ -500,17 +486,11 @@ const SideNavbar = ({ children }) => {
                     >
                       Users
                     </Link>
-                    <Link href="/terms-conditions"
+                    <Link href="/pages"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       onClick={toggleMobileMenu}
                     >
-                      Terms and Conditions
-                    </Link>
-                    <Link href="/privacy-policy"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={toggleMobileMenu}
-                    >
-                      Privacy Policy
+                      Pages
                     </Link>
                   </div>
                 </div>
