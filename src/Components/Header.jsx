@@ -1,11 +1,10 @@
-import React from "react";
-import { FaBell } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { Button } from "./ui/button";
 import {useRouter} from "next/navigation";
 
 const Header = ({ expanded, data, isLoading, error }) => {
   const router = useRouter();
+  const {userRole} = useSelector((state) => state.auth)
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -27,7 +26,7 @@ const Header = ({ expanded, data, isLoading, error }) => {
       )}
 
       {/* Search Bar */}
-      <div className="w-full sm:w-1/2 lg:w-2/3 mx-4">
+      {/* <div className="w-full sm:w-1/2 lg:w-2/3 mx-4">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <svg
@@ -50,13 +49,18 @@ const Header = ({ expanded, data, isLoading, error }) => {
             className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-purple-800 focus:border-purple-800 sm:text-sm"
           />
         </div>
-      </div>
+      </div> */}
 
-      <Button onClick={handleLogout}
-       className="text-white" 
-      >
-      Logout
-      </Button>
+      <div className="flex flex-row justify-center">
+        <div className="mt-1 mr-2">
+          {userRole?userRole.toUpperCase():""}
+        </div>
+        <Button onClick={handleLogout}
+        className="text-white" 
+        >
+        Logout
+        </Button>
+      </div>
 
       {/* Notification Icon */}
 
