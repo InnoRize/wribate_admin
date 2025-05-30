@@ -119,29 +119,43 @@ export default function UserForm() {
     }, [])
 
     useEffect(()=>{
-        if (editUser && roleOptions){
-            console.log()
-            let rolesList = editUser?.roles || []
-            for (let i = 0; i < rolesList.length; i++){
-                const roleName = roleOptions.find(role => role._id == rolesList[i]._id)?.roleName
-                rolesList[i].roleName = roleName
+        if (editUser && roleOptions && subOptions){
+            const rolesId = editUser?.roles || []
+            let rolesList = []
+            for (let i = 0; i < rolesId.length; i++){
+                const roleName = roleOptions.find(role => role._id == rolesId[i])?.roleName
+                rolesList.push({
+                    _id: rolesId[i],
+                    roleName: roleName
+                })
             }
-            
+
+            const subId = editUser.subscription?    // editUser.subscription for backward compatibility
+                        (editUser.subscription.id || editUser.subscription):
+                        subOptions.find(sub => sub.name.toLowerCase()==='free')._id || ""
+
             setFormData({
                 name: editUser?.name || "",
                 email: editUser?.email || "",
                 password: "",
                 newPassword: "",
                 country: editUser?.country || "",
-                subscription: editUser?.subscription || "",
+                subscription: subId,
                 roles: rolesList
             })
             setUserId(editUser._id)
         }
+        else if (!editUser && subOptions){
+            setFormData({
+                ...formData,
+                subscription:subOptions.find(sub => sub.name.toLowerCase()==='free')._id || ""
+            })
+            setCreatNew(true);
+        }
         else{
             setCreatNew(true);
         }
-    }, [editUser]);
+    }, [editUser, roleOptions, subOptions]);
 
     const [errors, setErrors] = useState({});
 
@@ -177,6 +191,8 @@ export default function UserForm() {
         if ((!creatNew && editPassword) && !(formData.newPassword.trim().length>=6)) 
             newErrors.newPassword = "Required atleast 6 characters";
         if (formData.roles.length <=0) newErrors.roles = "Required atleast 1"
+        if (!formData.subscription) newErrors.subscription = "Required one plan"
+        
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -512,6 +528,7 @@ export default function UserForm() {
                                 </option>
                             ))}
                         </select>
+                        {errors.subscription && <span className="text-red-500 text-xs">{errors.subscription}</span>}
                     </div>
                     <div className="md:col-span-2 flex justify-center space-x-2 mt-2">
                         <Button
