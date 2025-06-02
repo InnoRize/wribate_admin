@@ -74,15 +74,15 @@ const SingleWribate = () => {
       setWribateId(editWriabate._id);
       setFormData({
         title: editWriabate?.title || "",
-        coverImage: editWriabate?.coverImage||null,
-        coverImageBase64: editWriabate?.coverImage|| null,
+        coverImage: editWriabate?.image || editWriabate?.coverImage || null,
+        coverImageBase64: editWriabate?.image || editWriabate?.coverImage || null,
         leadFor: editWriabate?.leadFor || "",
         leadAgainst: editWriabate?.leadAgainst || "",
         supportingFor: editWriabate?.supportingFor || "",
         supportingAgainst: editWriabate?.supportingAgainst || "",
-        judge1: editWriabate?.judges[0] || "",
-        judge2: editWriabate?.judges[1] || "",
-        judge3: editWriabate?.judges[2] || "",
+        judge1: editWriabate?.judges?editWriabate?.judges[0] : "",
+        judge2: editWriabate?.judges?editWriabate?.judges[1] : "",
+        judge3: editWriabate?.judges?editWriabate?.judges[2] : "",
         startDate: editWriabate?.startDate || "",
         durationDays: editWriabate?.durationDays || 1,
         category: editWriabate?.category || "",
@@ -94,7 +94,7 @@ const SingleWribate = () => {
         prizeAmount: editWriabate?.prizeAmount ||0,
         _id: editWriabate?.createdBy || userId
       });
-      setImagePreview(editWriabate?.coverImage || null);
+      setImagePreview(editWriabate?.image || editWriabate?.coverImage || null || null);
       setCreatNew(false);
     }
     else {

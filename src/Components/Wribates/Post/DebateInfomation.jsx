@@ -229,7 +229,7 @@ const DebateInformation = ({ formData, handleInputChange, handleFileUpload, cate
                             </label>
                             {formData?.coverImage && (
                                 <p className="mt-3 text-sm text-gray-600 font-medium">
-                                    Selected: {formData.coverImage.name}
+                                    Selected: {formData.coverImage?.name}
                                 </p>
                             )}
                         </div>

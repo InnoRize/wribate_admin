@@ -2,9 +2,16 @@ import { useSelector } from "react-redux";
 import { Button } from "./ui/button";
 import {useRouter} from "next/navigation";
 
+function capitalizeFirstLetter(str) {
+  if (!str) {
+    return ""; // Handle empty strings
+  }
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 const Header = ({ expanded, data, isLoading, error }) => {
   const router = useRouter();
-  const {userRole} = useSelector((state) => state.auth)
+  const {user} = useSelector((state) => state.auth)
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -51,14 +58,12 @@ const Header = ({ expanded, data, isLoading, error }) => {
         </div>
       </div> */}
 
-      <div className="flex flex-row justify-center">
-        <div className="mt-1 mr-2">
-          {userRole?userRole.toUpperCase():""}
+      <div className="flex flex-row items-center justify-center space-x-4">
+        <div className="mt-1 text-sm text-gray-700">
+          {user ? `${user.email} (${capitalizeFirstLetter(user.userRole)})` : ""}
         </div>
-        <Button onClick={handleLogout}
-        className="text-white" 
-        >
-        Logout
+        <Button onClick={handleLogout} className="text-white">
+          Logout
         </Button>
       </div>
 

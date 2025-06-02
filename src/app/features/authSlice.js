@@ -4,6 +4,7 @@ const initialState = {
   isLoggedIn: false,
   userId: null,
   userRole: null,
+  user: null
 };
 
 const authSlice = createSlice({
@@ -14,6 +15,7 @@ const authSlice = createSlice({
       state.isLoggedIn = true;
       state.userId = action.payload.userId;
       state.userRole = action.payload.userRole;
+      state.user = action.payload.user
     },
     logout: (state) => {
       state.isLoggedIn = false;

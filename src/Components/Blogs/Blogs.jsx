@@ -121,7 +121,8 @@ const Blogs = () => {
             <p className="text-gray-500 mb-4">
               {searchTerm ? "No blogs match your search" : "You haven't created any blog posts yet"}
             </p>
-            <Button onClick={() => router.push('blogs/post-blog')}>
+            <Button onClick={() => router.push('blogs/post-blog')}
+              className='text-white'>
               Create Your First Blog Post
             </Button>
           </div>
@@ -147,7 +148,7 @@ const BlogCard = ({ blog, setBlogs, userRole }) => {
       setIsDeleting(true);
       const token = localStorage.getItem("token")
       const res = await axios.delete(
-        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/deleteBlog/${id}`,
+        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/admin/deleteBlog/${id}`,
         { 
           headers: {
             'Authorization': `Bearer ${token}`
