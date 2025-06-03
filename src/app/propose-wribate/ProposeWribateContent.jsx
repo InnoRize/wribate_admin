@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "../../Components/ui/button";
 import { SearchX, MoreHorizontal, Loader, Search, ChevronDown } from "lucide-react";
 import { useSelector } from "react-redux";
-import toast from "react-hot-toast";
+import Toast from "../../utils/Toast";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import authHeader from "../../utils/authHeader";
@@ -33,13 +33,10 @@ export default function ProposeWribateContent() {
   const [hasMore, setHasMore] = useState(true);
   const router = useRouter();
   const countryDropdownRef = useRef(null);
-
-  // Filter debates by both category and country
-  const filteredDebates = debates.filter((debate) => {
-    const categoryMatch = selectedCategory === "All" || debate.category === selectedCategory;
-    const countryMatch = selectedCountry === "All Countries" || debate.country === selectedCountry;
-    return categoryMatch && countryMatch;
-  });
+  const [filteredDebates, setFilteredDebates] = useState([])
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  const dropdownRef = useRef(null);
 
   // Filter countries based on search term
   const filteredCountries = countries.filter(country =>
@@ -75,7 +72,7 @@ export default function ProposeWribateContent() {
       }
     } catch (err) {
       console.log(err);
-      toast.error("Failed to load debates");
+      Toast("Failed to load debates","error");
     } finally {
       setIsLoading(false);
     }
@@ -102,7 +99,7 @@ export default function ProposeWribateContent() {
       }
       catch (err) {
         console.log(err);
-        toast.error("Error occurred while fetching categories");
+        Toast("Error occurred while fetching categories","error");
       }
     };
 
@@ -121,7 +118,7 @@ export default function ProposeWribateContent() {
         setCountries(sortedCountries);
       } catch (err) {
         console.log(err);
-        toast.error("Error fetching countries");
+        Toast("Error fetching countries","error");
         // Fallback to empty array if API fails
         setCountries([]);
       }
@@ -137,6 +134,9 @@ export default function ProposeWribateContent() {
         setIsCountryDropdownOpen(false);
         setCountrySearchTerm("");
       }
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setActiveDropdown(null);
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
@@ -144,6 +144,20 @@ export default function ProposeWribateContent() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  useEffect(()=>{
+    // Filter debates by both category and country
+    const newDebates = debates.filter((debate) => {
+      const categoryMatch = selectedCategory === "All" || debate.category === selectedCategory;
+      const countryMatch = selectedCountry === "All Countries" || debate.country === selectedCountry;
+      return categoryMatch && countryMatch;
+    })
+    setFilteredDebates(newDebates)
+  }, [debates])
+
+  const handleActionsClick = (debateId) => {
+    setActiveDropdown(activeDropdown === debateId ? null : debateId);
+  };
 
   // Handle load more button click
   const handleLoadMore = () => {
@@ -157,6 +171,33 @@ export default function ProposeWribateContent() {
     setSelectedCountry(country);
     setIsCountryDropdownOpen(false);
     setCountrySearchTerm("");
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      setIsDeleting(true);
+      const token = localStorage.getItem("token")
+      const res = await axios.delete(
+        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/admin/deleteProposeWribate/${id}`,
+        { 
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          withCredentials: true 
+        }
+      );
+
+      const data = res.data;
+      if (data.status === 1) {
+        setFilteredDebates((prev) => prev.filter((prop) => prop._id !== id));
+        Toast("Blog deleted successfully","success");
+      }
+    } catch (err) {
+      console.error(err);
+      Toast("Failed to delete blog","error");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   // Separate the visible and dropdown categories
@@ -236,7 +277,7 @@ export default function ProposeWribateContent() {
               if (user?._id) {
                 router.push('/propose-wribate/propose');
               } else {
-                toast.error("Please login to propose a topic.");
+                Toast("Please login to propose a topic.","error");
               }
             }}
             className="bg-blue-900  text-white"
@@ -255,6 +296,11 @@ export default function ProposeWribateContent() {
                 debate={debate}
                 setHook={setHook}
                 hook={hook}
+                handleDelete={handleDelete}
+                isDeleting={isDeleting}
+                handleActionsClick={handleActionsClick}
+                activeDropdown={activeDropdown}
+                dropdownRef={dropdownRef}
               />
             ))}
           </div>

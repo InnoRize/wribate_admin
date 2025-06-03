@@ -122,7 +122,7 @@ const ImageField = ({formData, handleFormChange, isCompressing, setIsCompressing
                         onClick={removeImage}
                         className="absolute top-2 right-2 rounded-full p-1 h-8 w-8"
                     >
-                        <X size={16} />
+                        <X size={16} color='red' />
                     </Button>
                 </div>
             )}

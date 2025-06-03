@@ -8,32 +8,41 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { X, Edit3, MapPin, BookOpen, Tag, AlertTriangle, Search, ChevronDown, Upload, Image as ImageIcon, Loader } from "lucide-react";
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import axios from 'axios';
 import TagsInput from './TagsInput'
 import CountryDropdown from './CountryDropdown'
 import CategoryDropdown from './CategoryDropdown'
 import ImageField from './ImageField';
+import { setCurrentDebate } from '../../features/debateSlice';
 
 const WribateProposalForm = () => {
     const {user} = useSelector((state) => state.auth)
     const router = useRouter();
+    const dispatch = useDispatch()
     const [isCompressing, setIsCompressing] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const editDebate = useSelector((state) => state.debate.currentDebate)
+
     const [formData, setFormData] = useState({
-        title: '',
-        category: '',
-        tags: [], // Changed from 'tag' to 'tags' as an array
-        country: '',
-        context: '',
-        image: '', // Base64 string will be stored here
-        user_id: user?._id || null
+        title: editDebate?.title||'',
+        category: editDebate?.category||'',
+        tags: editDebate?.tags||[], // Changed from 'tag' to 'tags' as an array
+        country: editDebate?.country||'',
+        context: editDebate?.context||'',
+        image: editDebate?.image||'', // Base64 string will be stored here
+        user_id: editDebate?.user_id|| user?._id || null
     });
 
     //handle form change
     const handleFormChange = (name, value) => {
         setFormData({ ...formData, [name]: value });
+    }
+
+    const handleCancel = () =>{
+        dispatch(setCurrentDebate(null))
+        router.back()
     }
 
     const handleSubmit = async () => {
@@ -64,17 +73,38 @@ const WribateProposalForm = () => {
             }
 
             setIsSubmitting(true);
+            
+            if(editDebate){
+                const token = localStorage.getItem("token")
+                const res = await axios.post(process.env.NEXT_PUBLIC_APP_BASE_URL + `/admin/updateProposeWribate/${editDebate._id}`,
+                    formData, 
+                    { 
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        withCredentials: true 
+                    });
 
-            const res = await axios.post(process.env.NEXT_PUBLIC_APP_BASE_URL + '/propose', formData, {
-                withCredentials: true
-            });
+                const data = res.data;
 
-            const data = res.data;
-
-            if (data.res) {
-                toast.success("Proposed");
-                router.push('/propose-wribate');
+                if (data.res) {
+                    toast.success("Updated");
+                    router.push('/propose-wribate');
+                }
             }
+            else{
+                const res = await axios.post(process.env.NEXT_PUBLIC_APP_BASE_URL + '/propose', formData, {
+                    withCredentials: true
+                });
+
+                const data = res.data;
+
+                if (data.res) {
+                    toast.success("Proposed");
+                    router.push('/propose-wribate');
+                }
+            }
+            
         }
         catch (err) {
             console.log(err);
@@ -144,7 +174,7 @@ const WribateProposalForm = () => {
                     <CardHeader className="border-b bg-gray-50">
                         <CardTitle className="text-xl font-bold text-blue-900 flex items-center">
                             <Edit3 className="mr-2" size={20} />
-                            New Wribate Submission
+                            {editDebate?"Editing Wribate Proposal":"New Wribate Submission"}
                         </CardTitle>
                         <CardDescription className="text-gray-600">
                             Fill in the form below with your wribate proposal details
@@ -263,7 +293,7 @@ const WribateProposalForm = () => {
                             variant="outline"
                             className="rounded-none border-2 border-gray-300 hover:bg-gray-100 text-gray-700"
                             disabled={isSubmitting}
-                            onClick={() => router.back()}
+                            onClick={handleCancel}
                         >
                             Cancel
                         </Button>

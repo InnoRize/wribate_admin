@@ -57,7 +57,6 @@ export default function UsersTable() {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setActiveDropdown(null);
-        setAccessDropdown(null);
       }
     }
     getRoles()
