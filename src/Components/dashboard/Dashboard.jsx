@@ -5,17 +5,14 @@ import { useEffect } from "react";
 export default function Dashboard() {
   // Sample data for dashboard metrics
 
-  const { data, isLoading, error } = useGetDashboardQuery({
-    startDate: "2025-04-24",
-    endDate: "2025-05-25",
-  });
+  const { data, isLoading, error } = useGetDashboardQuery();
 
   const [metrics, setMetrics] = useState({
     users: {
       today: { value: "---", change: "---" },
       weekly: { value: "---", change: "---" },
       monthly: { value: "---", change: "---" },
-      total: { value: "---" , change: null },
+      total: { value: "---", change: null },
     },
     premiumUsers: {
       today: { value: "---", change: "---" },
@@ -41,7 +38,7 @@ export default function Dashboard() {
       monthly: { value: "---", change: "---" },
       total: { value: null, change: null },
     },
-    wribateAmount:{
+    wribateAmount: {
       today: { value: "---", change: "---" },
       weekly: { value: "---", change: "---" },
       monthly: { value: "---", change: "---" },
@@ -51,31 +48,38 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (data && data.status && data.status === "success") {
-      // console.log("data", data.data);
 
-      let activeUsers = 0 
-      if (data.data.userStatusCounts) {
-        activeUsers = data.data.userStatusCounts.find(
-          users => users._id === 1
-        )?.count || 0;
+      const userStats = data.data.userStats
+      const wribateStats = data.data.wribateStats
+      const amountStats = data.data.completedTransactionStats
+
+      function findCount(period, stats, idValue) {
+        if (!stats || !stats[period] || !Array.isArray(stats[period])) return 0;
+        return stats[period].find(obj => obj._id === idValue)?.count || 0;
       }
 
-      let totalWribates = 0
-      if (data.data.writbateTypeCounts) {
-        totalWribates += data.data.writbateTypeCounts.find(
-          wribateType => wribateType._id === 'Free'
-        )?.count || 0;
-        totalWribates += data.data.writbateTypeCounts.find(
-          wribateType => wribateType._id === 'Sonsored'
-        )?.count || 0;
+      function getPercent(oldValue, newValue) {
+        return oldValue ? ((oldValue - newValue) * 100 / oldValue).toFixed(1) : 0
       }
-      
+
       setMetrics({
         users: {
-          today: { value: "---", change: "---" },
-          weekly: { value: "---", change: "---" },
-          monthly: { value: "---", change: "---" },
-          total: { value: activeUsers , change: null },
+          today: {
+            value: findCount("day", userStats, 1),
+            change: getPercent(findCount("prevDay", userStats, 1), findCount("day", userStats, 1))
+          },
+          weekly: {
+            value: findCount("week", userStats, 1),
+            change: getPercent(findCount("prevWeek", userStats, 1), findCount("week", userStats, 1))
+          },
+          monthly: {
+            value: findCount("month", userStats, 1),
+            change: getPercent(findCount("prevMonth", userStats, 1), findCount("month", userStats, 1))
+          },
+          total: {
+            value: findCount("total", userStats, 1),
+            change: null
+          },
         },
         premiumUsers: {
           today: { value: "---", change: "---" },
@@ -84,16 +88,43 @@ export default function Dashboard() {
           total: { value: null, change: null },
         },
         wribates: {
-          today: { value: "---", change: "---" },
-          weekly: { value: "---", change: "---" },
-          monthly: { value: "---", change: "---" },
-          total: { value: totalWribates, change: null },
+          today: {
+            value: findCount("day", wribateStats, "Free") + findCount("day", wribateStats, "Sponsored"),
+            change: getPercent(findCount("prevDay", wribateStats, "Free") + findCount("prevDay", wribateStats, "Sponsored")
+              , findCount("day", wribateStats, "Free") + findCount("day", wribateStats, "Sponsored"))
+          },
+          weekly: {
+            value: findCount("week", wribateStats, "Free") + findCount("week", wribateStats, "Sponsored"),
+            change: getPercent(findCount("prevWeek", wribateStats, "Free") + findCount("prevWeek", wribateStats, "Sponsored"),
+              findCount("week", wribateStats, "Free") + findCount("week", wribateStats, "Sponsored"))
+          },
+          monthly: {
+            value: findCount("month", wribateStats, "Free") + findCount("month", wribateStats, "Sponsored"),
+            change: getPercent(findCount("prevMonth", wribateStats, "Free") + findCount("prevMonth", wribateStats, "Sponsored")
+              , findCount("month", wribateStats, "Free") + findCount("month", wribateStats, "Sponsored"))
+          },
+          total: {
+            value: findCount("total", wribateStats, "Free") + findCount("total", wribateStats, "Sponsored"),
+            change: null
+          },
         },
         featuredWribates: {
-          today: { value: "---", change: "---" },
-          weekly: { value: "---", change: "---" },
-          monthly: { value: "---", change: "---" },
-          total: { value: null, change: null },
+          today: {
+            value: findCount("day", wribateStats, "Sponsored"),
+            change: getPercent(findCount("prevDay", wribateStats, "Sponsored"), findCount("day", wribateStats, "Sponsored"))
+          },
+          weekly: {
+            value: findCount("week", wribateStats, "Sponsored"),
+            change: getPercent(findCount("prevWeek", wribateStats, "Sponsored"), findCount("week", wribateStats, "Sponsored"))
+          },
+          monthly: {
+            value: findCount("month", wribateStats, "Sponsored"),
+            change: getPercent(findCount("prevMonth", wribateStats, "Sponsored"), findCount("month", wribateStats, "Sponsored"))
+          },
+          total: {
+            value: findCount("total", wribateStats, "Sponsored"),
+            change: null
+          },
         },
         adViews: {
           today: { value: "---", change: "---" },
@@ -101,12 +132,24 @@ export default function Dashboard() {
           monthly: { value: "---", change: "---" },
           total: { value: null, change: null },
         },
-        wribateAmount:{
-          today: { value: "---", change: "---" },
-          weekly: { value: "---", change: "---" },
-          monthly: { value: "---", change: "---" },
-          total: { value: data.data.totalCompletedAmount, change: null },
-        }
+        wribateAmount: {
+          today: {
+            value: findCount("day", amountStats, null),
+            change: getPercent(findCount("prevDay", amountStats, null), findCount("day", amountStats, null))
+          },
+          weekly: {
+            value: findCount("week", amountStats, null),
+            change: getPercent(findCount("prevWeek", amountStats, null), findCount("week", amountStats, null))
+          },
+          monthly: {
+            value: findCount("month", amountStats, null),
+            change: getPercent(findCount("prevMonth", amountStats, null), findCount("month", amountStats, null))
+          },
+          total: {
+            value: findCount("total", amountStats, null),
+            change: null
+          },
+        },
       });
     }
   }, [data]);
@@ -157,8 +200,15 @@ export default function Dashboard() {
       <div className="grid grid-cols-5 gap-2 mb-4">
         <div className="text-center font-semibold text-lg"></div>
         {periods.map((period) => (
-          <div key={period} className="text-center font-semibold text-lg">
-            {period}
+          <div key={period} className="text-center ">
+            <div className="font-semibold text-lg">
+              {period}
+            </div>
+            {(period == "Weekly" || period == "Monthly") &&
+              <div>
+                (Last {period == "Weekly" ? 7 : 30} days)
+              </div>
+            }
           </div>
         ))}
       </div>
@@ -179,9 +229,9 @@ export default function Dashboard() {
                 className="bg-blue-500 text-white p-3 rounded-lg shadow flex flex-col justify-center"
               >
                 <div className="text-2xl font-bold">{data.value}</div>
-                {data.change && (
+                {(data.change || data.change == 0) && (
                   <div className="text-sm font-medium">
-                    {data.change} than yesterday
+                    {data.change} % {data.change < 0 ? "decrease" : "increase"} from {period == "Today" ? "yesterday" : "last " + period.slice(0, -2)?.toLowerCase()}
                   </div>
                 )}
               </div>

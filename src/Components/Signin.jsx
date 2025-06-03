@@ -1,17 +1,16 @@
-import React, { useState } from "react";
-import Link from "next/link";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { setCredentials, logout } from "../app/features/authSlice";
 import { useSigninMutation } from "../app/services/authApi";
 import Toast from "../utils/Toast";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { auth, googleProvider} from "../firebase";
 
 const SigninPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState(process.env.NEXT_PUBLIC_APP_BASE_EMAIL || '');
-  const [password, setPassword] = useState(process.env.NEXT_PUBLIC_APP_BASE_PSWD || '');
+  const [email, setEmail] = useState(process.env.NEXT_PUBLIC_APP_BASE_EMAIL || null);
+  const [password, setPassword] = useState(process.env.NEXT_PUBLIC_APP_BASE_PSWD || null);
   const router = useRouter();
   const dispatch = useDispatch();
   const [signin, { isLoading }] = useSigninMutation();
@@ -20,14 +19,33 @@ const SigninPage = () => {
     e.preventDefault();
 
     var firebaseToken = null;
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential?.user || null;
-      firebaseToken = user?.accessToken || null;
-    } catch (err) {
+    if(!password){
+      try {
+        // Sign in with Google provider
+        const result = await signInWithPopup(auth, googleProvider);
+        const user = result.user;
 
+        // Get the Firebase ID token
+        firebaseToken = await user.getIdToken();  // This gives the Firebase ID token
+      }
+      catch (error) {
+        console.error("Error logging in with provider: ", error.message);
+        Toast("Google Signin", "error");
+      }
     }
-
+    else{
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        firebaseToken = await userCredential.user.getIdToken();
+      } catch (err) {
+        const errorCode = err.code;
+        console.error("Firebase Signin Error:", err);
+        if (errorCode !== 'auth/user-not-found') {
+          Toast(err?.message||"Firebase Signin Failed.", "error");
+          return;
+        }
+      }
+    }
     const data = { email, password, firebaseToken };
     try {
       const response = await signin(data).unwrap();
@@ -45,15 +63,13 @@ const SigninPage = () => {
       dispatch(setCredentials(response));
 
       Toast("Signin successful!", "success");
-      router.push("/");
+      window.location.href = "/"
     } catch (err) {
       // Handle error - e.g., show error message
       console.error("Signin Failed:", err);
       dispatch(logout());
       Toast(err?.data?.message || "Signin failed. Please try again.", "error");
     }
-
-    //navigate("/");
   };
 
   return (
@@ -94,11 +110,10 @@ const SigninPage = () => {
       >
         <div className="max-w-md w-full mx-auto">
           <div className="mb-6 flex flex-row justify-between items-center mb-4 md:mb-8">
-            <h1 className="text-4xl font-bold text-primary ">WriBate - Admins</h1>
+            <h1 className="text-4xl font-bold text-primary ">Wribate - Admin</h1>
           </div>
 
           <h2 className="text-3xl font-bold mb-4">Sign in</h2>
-          <p className="text-gray-500 mb-6">Sign in with Open account</p>
 
           <form className="space-y-4" onSubmit={handleSignin}>
             <div className="relative">
@@ -120,7 +135,7 @@ const SigninPage = () => {
               <input
                 type="email"
                 className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
-                placeholder="enter your email"
+                placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -145,7 +160,7 @@ const SigninPage = () => {
               <input
                 type={showPassword ? "text" : "password"}
                 className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
-                placeholder="enter password"
+                placeholder="Enter password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />

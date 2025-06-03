@@ -1,6 +1,6 @@
 'use client';
-import Plans from "../../Components/Subscriptions/Plans/Plans";
+import SubscriptionsTable from "../../Components/Subscriptions/Subscriptions";
 
 export default function Page() {
-    return
+    return <SubscriptionsTable/>
 }

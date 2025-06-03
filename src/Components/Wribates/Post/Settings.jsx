@@ -2,7 +2,17 @@ import React from 'react'
 import FieldLabel, { tooltips } from './FieldLabel'
 import { Info, Clock } from "lucide-react";
 
-const Settings = ({ formData, handleInputChange, setCurrentSection, handleToggleChange, isLoading }) => {
+const Settings = ({ formData, handleInputChange, setCurrentSection, handleToggleChange, isLoading, creatNew }) => {
+
+    // Convert ISO string to a datetime-local format string
+    const toDatetimeLocal = (isoString) => {
+        if (!isoString)
+            return ""
+        const date = new Date(isoString);
+        const offset = date.getTimezoneOffset();
+        const localDate = new Date(date.getTime() - offset * 60000); // Adjust for local timezone
+        return localDate.toISOString().slice(0, 16); // "YYYY-MM-DDTHH:MM"
+    };
 
     const inputClass = "w-full p-3 border-0 border-b-2 border-gray-300 focus:outline-none focus:border-blue-900 text-sm transition-all duration-200  bg-gray-200";
     return (
@@ -26,7 +36,7 @@ const Settings = ({ formData, handleInputChange, setCurrentSection, handleToggle
                                 id="startDate"
                                 type="datetime-local"
                                 name="startDate"
-                                value={formData.startDate}
+                                value={toDatetimeLocal(formData.startDate)}
                                 onChange={handleInputChange}
                                 className={`${inputClass} pr-10`}
                                 required
@@ -151,7 +161,7 @@ const Settings = ({ formData, handleInputChange, setCurrentSection, handleToggle
                             </svg>
                             Creating Wribate...
                         </>
-                    ) : "Submit & Create Wribate"}
+                    ) : (creatNew?"Submit & Create Wribate":"Submit Wribate")}
                 </button>
             </div>
         </div>

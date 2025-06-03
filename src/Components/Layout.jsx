@@ -5,11 +5,12 @@ import axios from 'axios'
 import Link from "next/link";
 import { usePathname, useRouter } from 'next/navigation';
 import { FaTimes } from "react-icons/fa";
-import { RiRefreshLine } from "react-icons/ri";
-import { FaBell } from "react-icons/fa";
 import Header from "./Header";
 import { useGetProfileQuery } from "../app/services/authApi";
-import { FileText, Handshake, Database, Tags, UserCheck, MapPin, SquareChartGantt, FolderLock } from "lucide-react";
+import { FileText, FileStack, Database, Tags, UserCheck, MapPin, SquareChartGantt } from "lucide-react";
+import { useDispatch } from "react-redux";
+import {setCredentials} from "../app/features/authSlice"
+import { TbViewfinder } from "react-icons/tb";
 
 const SideNavbar = ({ children }) => {
   const [expanded, setExpanded] = useState(false);
@@ -21,15 +22,12 @@ const SideNavbar = ({ children }) => {
   const buttonRef = useRef(null);
   const [expandedMaserData, setExpandedMasterData] = useState(false);
   const [hasValidToken, setHasValidToken] = useState(false)
+  const dispatch = useDispatch()
 
   const { data, isLoading, error } = useGetProfileQuery();
   const toggleSidebar = () => {
     setExpanded(!expanded);
   };
-
-  if (data) {
-    console.log(data);
-  }
 
   const toggleMobileMenu = () => {
     setMobileMenu(!mobileMenu);
@@ -48,6 +46,7 @@ const SideNavbar = ({ children }) => {
           router.push('/signin')
         }
         setHasValidToken(true)
+        dispatch(setCredentials(res.data?.data))
       }
       catch (error) {
         console.error('Token validation failed:', error)
@@ -180,6 +179,18 @@ const SideNavbar = ({ children }) => {
                 </li>
                 <li>
                   <Link
+                    href="/propose-wribate"
+                    className={`flex items-center p-1 md:p-2 rounded-lg text-primary hover:bg-purple-100 ${
+                      location.pathname === "/" ? "bg-purple-100" : ""
+                    } ${expanded ? "justify-start" : "justify-center"}`}
+                    onClick={handleLinkClick}
+                  >
+                    <TbViewfinder className="w-5 h-5" />
+                    {expanded && <span className="ml-3">Propose Wribate</span>}
+                  </Link>
+                </li>
+                <li>
+                  <Link
                     href="/wribates"
                     className={`flex items-center p-1 md:p-2 rounded-lg text-primary hover:bg-purple-100 ${
                       location.pathname === "/" ? "bg-purple-100" : ""
@@ -190,7 +201,7 @@ const SideNavbar = ({ children }) => {
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-8 w-8"
                       fill="none"
-                      viewBox="0 0 48 48"
+                      viewBox="5 5 48 48"
                       stroke="currentColor"
                     >
                       <path
@@ -200,7 +211,7 @@ const SideNavbar = ({ children }) => {
                         d="M31.42,31H28.62L26,22.56,23.35,31H20.55l-4-14H19l2.09,8.11,2.58-8.11H26l2.53,8.11L30.58,17h2.44Z"
                       />
                     </svg>
-                    {expanded && <span className="ml-3">Wribates</span>}
+                    {expanded && <span className="">Wribates</span>}
                   </Link>
                 </li>
                 <li>
@@ -313,29 +324,15 @@ const SideNavbar = ({ children }) => {
                 </li>
                 <li>
                   <Link
-                    href="/terms-conditions"
+                    href="/pages"
                     className={`flex items-center p-2 rounded-lg text-primary hover:bg-purple-100 ${
-                      location.pathname === "/privacy-terms" ? "bg-purple-100" : ""
+                      location.pathname === "/pages" ? "bg-purple-100" : ""
                     } ${expanded ? "justify-start" : "justify-center"}`}
                     onClick={handleLinkClick}
                   >
-                    <Handshake className="w-5 h-5" />
+                    <FileStack className="w-5 h-5" />
                     {expanded && (
-                      <span className="ml-3 whitespace-nowrap">Terms and Conditions</span>
-                    )}
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/privacy-policy"
-                    className={`flex items-center p-2 rounded-lg text-primary hover:bg-purple-100 ${
-                      location.pathname === "/privacy-terms" ? "bg-purple-100" : ""
-                    } ${expanded ? "justify-start" : "justify-center"}`}
-                    onClick={handleLinkClick}
-                  >
-                    <FolderLock className="w-5 h-5" />
-                    {expanded && (
-                      <span className="ml-3 whitespace-nowrap">Privacy Policy</span>
+                      <span className="ml-3 whitespace-nowrap">Pages</span>
                     )}
                   </Link>
                 </li>
@@ -371,33 +368,6 @@ const SideNavbar = ({ children }) => {
               <div className="flex flex-row justify-between items-center gap-2">
                 <img className="h-10 w-12" src="/logo.jpeg" alt="logo" />
 
-                {/* Search Bar */}
-                <div className="flex-1 mx-4">
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <svg
-                        className="h-5 w-5 text-gray-400"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        aria-hidden="true"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </div>
-                    <input
-                      type="text"
-                      placeholder="Search for Topic..."
-                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-purple-800 focus:border-purple-800 sm:text-sm"
-                    />
-                  </div>
-                </div>
-
-                <FaBell size={20} className="text-gray-600" />
                 <button
                   onClick={toggleMobileMenu}
                   ref={buttonRef}
@@ -444,6 +414,13 @@ const SideNavbar = ({ children }) => {
                       onClick={toggleMobileMenu}
                     >
                       Wribates
+                    </Link>
+                    <Link
+                      href="/propose-wribate"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={toggleMobileMenu}
+                    >
+                      Propose Wribate
                     </Link>
                     <Link
                       href="/blogs"
@@ -500,17 +477,11 @@ const SideNavbar = ({ children }) => {
                     >
                       Users
                     </Link>
-                    <Link href="/terms-conditions"
+                    <Link href="/pages"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       onClick={toggleMobileMenu}
                     >
-                      Terms and Conditions
-                    </Link>
-                    <Link href="/privacy-policy"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={toggleMobileMenu}
-                    >
-                      Privacy Policy
+                      Pages
                     </Link>
                   </div>
                 </div>

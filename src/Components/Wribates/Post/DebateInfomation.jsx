@@ -83,7 +83,7 @@ const SearchableDropdown = ({ id, name, value, onChange, options, placeholder, r
           )}
         </div>
         {value && !isOpen && (
-          <button onClick={handleClear} className="text-gray-400 hover:text-gray-600">
+          <button type="button" onClick={handleClear} className="text-gray-400 hover:text-gray-600">
             <X size={16} />
           </button>
         )}
@@ -229,7 +229,7 @@ const DebateInformation = ({ formData, handleInputChange, handleFileUpload, cate
                             </label>
                             {formData?.coverImage && (
                                 <p className="mt-3 text-sm text-gray-600 font-medium">
-                                    Selected: {formData.coverImage.name}
+                                    Selected: {formData.coverImage?.name}
                                 </p>
                             )}
                         </div>
@@ -281,7 +281,7 @@ const DebateInformation = ({ formData, handleInputChange, handleFileUpload, cate
                     </div>
                 </div>
 
-                {(!userRole || userRole !== "user") && (
+                {(!userRole || userRole?.toLowerCase() !== "user") && (
                     <div className="mt-6">
                         <FieldLabel htmlFor="institution" tooltip={tooltips.institution}>
                             Institution

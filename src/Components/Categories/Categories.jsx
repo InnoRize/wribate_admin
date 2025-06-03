@@ -8,8 +8,10 @@ import {
   useDeleteCategoryMutation,
 } from "../../app/services/authApi";
 import Swal from "sweetalert2";
+import { useSelector } from "react-redux";
 
 export default function CategoriesList() {
+  const {userRole} = useSelector((state) => state.auth)
   const [categories, setCategories] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [categoryName, setCategoryName] = useState("");
@@ -153,6 +155,7 @@ export default function CategoriesList() {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Categories ({categories.length})</h1>
+        {userRole.toLowerCase() === 'admin' &&
         <button
           className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md flex items-center"
           onClick={handleAddCategory}
@@ -172,7 +175,7 @@ export default function CategoriesList() {
             ></path>
           </svg>
           Add Category
-        </button>
+        </button>}
       </div>
 
       {categories.length === 0 ? (
@@ -253,6 +256,7 @@ export default function CategoriesList() {
                       {category.categoryName}
                     </span>
                   </div>
+                  {userRole.toLowerCase() === 'admin' &&
                   <div className="relative">
                     <button
                       className="text-gray-400 hover:text-gray-600"
@@ -291,7 +295,7 @@ export default function CategoriesList() {
                         </ul>
                       </div>
                     )}
-                  </div>
+                  </div>}
                 </div>
               </div>
             ))}
@@ -299,7 +303,8 @@ export default function CategoriesList() {
       )}
 
       {/* Modal for Add/Edit Category */}
-      {showModal && (
+      {userRole.toLowerCase() === 'admin' &&
+      showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <div className="flex justify-between items-center mb-4">

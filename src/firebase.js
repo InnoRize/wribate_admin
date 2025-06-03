@@ -2,7 +2,7 @@
 
 // firebase.js
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_APP_BASE_APIKEY,
@@ -14,10 +14,14 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_APP_BASE_MEASUREMENTID,
 };
 
+// Create provider instances for each service
+const googleProvider = new GoogleAuthProvider();
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 export {
   auth,
+  googleProvider,
 };
