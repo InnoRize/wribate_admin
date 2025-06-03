@@ -9,8 +9,8 @@ import { auth, googleProvider} from "../firebase";
 
 const SigninPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState(process.env.NEXT_PUBLIC_APP_BASE_EMAIL || "mlreddy82@gmail.com");
-  const [password, setPassword] = useState(process.env.NEXT_PUBLIC_APP_BASE_PSWD || "lohit123");
+  const [email, setEmail] = useState(process.env.NEXT_PUBLIC_APP_BASE_EMAIL || null);
+  const [password, setPassword] = useState(process.env.NEXT_PUBLIC_APP_BASE_PSWD || null);
   const router = useRouter();
   const dispatch = useDispatch();
   const [signin, { isLoading }] = useSigninMutation();
@@ -110,11 +110,10 @@ const SigninPage = () => {
       >
         <div className="max-w-md w-full mx-auto">
           <div className="mb-6 flex flex-row justify-between items-center mb-4 md:mb-8">
-            <h1 className="text-4xl font-bold text-primary ">WriBate - Admins</h1>
+            <h1 className="text-4xl font-bold text-primary ">Wribate - Admin</h1>
           </div>
 
           <h2 className="text-3xl font-bold mb-4">Sign in</h2>
-          <p className="text-gray-500 mb-6">Sign in with Open account</p>
 
           <form className="space-y-4" onSubmit={handleSignin}>
             <div className="relative">

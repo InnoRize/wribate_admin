@@ -7,6 +7,7 @@ import wribateSlice from "./features/wribateSlice";
 import subscriptionSlice from "./features/subscriptionSlice";
 import pageSlice from "./features/pageSlice"
 import userSlice from "./features/userSlice"
+import debateSlice from "./features/debateSlice"
 // import storeSlice from "./services/storeSlice";
 
 export const store = configureStore({
@@ -18,6 +19,7 @@ export const store = configureStore({
     subscription: subscriptionSlice,
     page: pageSlice,
     user: userSlice,
+    debate: debateSlice,
     [baseApi.reducerPath]: baseApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>

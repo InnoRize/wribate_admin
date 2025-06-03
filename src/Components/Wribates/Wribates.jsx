@@ -577,10 +577,12 @@ export default function Wribates() {
                             className="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-100">
                               Edit
                             </button>
+                            {userRole.toLowerCase() === 'admin' &&
                             <button onClick={() => handleDelete(wribate._id)}
                             className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
                               Delete
                             </button>
+                            }
                           </div>
                         </div>
                       )}

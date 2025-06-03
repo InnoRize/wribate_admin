@@ -3,14 +3,12 @@ import {
   useDeleteSubscriptionMutation,
   useGetSubscriptionsQuery,
 } from "../../app/services/authApi";
-import Toastify from "../../utils/Toast";
 import { Button } from "../ui/button";
 import { PlusCircle, Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
 import {setCurrentSubscription, clearSubscription} from '../../app/features/subscriptionSlice'
-import { Description } from "./Description";
 import {DisplaySubscription} from "./DisplaySubscription"
 
 export default function SubscriptionsTable() {
@@ -24,6 +22,7 @@ export default function SubscriptionsTable() {
   const dropdownRef = useRef(null);
   const router = useRouter();
   const dispatch = useDispatch();
+  const {userRole} = useSelector((state) => state.auth)
 
 
   const { data: subscriptionsData, isLoading, error, refetch } = useGetSubscriptionsQuery();
@@ -241,12 +240,13 @@ export default function SubscriptionsTable() {
             </svg>
           </div>
         </div>
+        {userRole.toLowerCase() === 'admin' &&
         <Button onClick={handleAddSub }
           className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
         >
           <PlusCircle size={18} className="mr-1" />
             Add Subscription
-        </Button>
+        </Button>}
       </div>
 
       {/* Table */}
@@ -310,41 +310,44 @@ export default function SubscriptionsTable() {
                     </div>
                   </td>
                   <td className="px-4 py-4 text-right text-sm font-medium relative">
-                    <button
-                      onClick={() => handleActionsClick(sub._id)}
-                      className="text-gray-400 hover:text-gray-900"
-                    >
-                      <svg
-                        className="w-5 h-5"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
+                    {userRole.toLowerCase() === 'admin' &&
+                    <div>
+                      <button
+                        onClick={() => handleActionsClick(sub._id)}
+                        className="text-gray-400 hover:text-gray-900"
                       >
-                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
-                      </svg>
-                    </button>
+                        <svg
+                          className="w-5 h-5"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                        </svg>
+                      </button>
 
-                    {activeDropdown === sub._id && (
-                      <div
-                        ref={dropdownRef}
-                        className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200"
-                      >
-                        <div className="py-1">
-                          <button
-                            onClick={() => handleEdit(sub)}
-                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDelete(sub._id)}
-                            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                          >
-                            Delete
-                          </button>
+                      {activeDropdown === sub._id && (
+                        <div
+                          ref={dropdownRef}
+                          className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200"
+                        >
+                          <div className="py-1">
+                            <button
+                              onClick={() => handleEdit(sub)}
+                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDelete(sub._id)}
+                              className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                            >
+                              Delete
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>}
                   </td>
                 </tr>
               ))

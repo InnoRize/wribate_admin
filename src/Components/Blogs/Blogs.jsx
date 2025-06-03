@@ -13,6 +13,7 @@ import toast from 'react-hot-toast';
 
 const Blogs = () => {
   const dispatch = useDispatch();
+  const {userRole} = useSelector((state) => state.auth)
   const router = useRouter();
   const [blogs, setBlogs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -90,6 +91,7 @@ const Blogs = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
+          {userRole?.toLowerCase() === 'admin' &&
           <Button
             onClick={handleCreate}
             className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
@@ -97,6 +99,7 @@ const Blogs = () => {
             <PlusCircle size={18} className="mr-1" />
             New Post
           </Button>
+          }
         </div>
       </div>
 
@@ -109,25 +112,28 @@ const Blogs = () => {
         ) : filteredBlogs.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredBlogs.map((blog) => (
-              <BlogCard key={blog._id} blog={blog} setBlogs={setBlogs} />
+              <BlogCard key={blog._id} blog={blog} setBlogs={setBlogs} userRole={userRole} />
             ))}
           </div>
         ) : (
+          (userRole.toLowerCase() === 'admin' &&
           <div className="text-center py-12">
             <p className="text-gray-500 mb-4">
               {searchTerm ? "No blogs match your search" : "You haven't created any blog posts yet"}
             </p>
-            <Button onClick={() => router.push('blogs/post-blog')}>
+            <Button onClick={() => router.push('blogs/post-blog')}
+              className='text-white'>
               Create Your First Blog Post
             </Button>
           </div>
+          ) || <div></div>
         )}
       </div>
     </main>
   );
 };
 
-const BlogCard = ({ blog, setBlogs }) => {
+const BlogCard = ({ blog, setBlogs, userRole }) => {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
   const dispatch = useDispatch();
@@ -142,7 +148,7 @@ const BlogCard = ({ blog, setBlogs }) => {
       setIsDeleting(true);
       const token = localStorage.getItem("token")
       const res = await axios.delete(
-        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/deleteBlog/${id}`,
+        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/admin/deleteBlog/${id}`,
         { 
           headers: {
             'Authorization': `Bearer ${token}`
@@ -225,6 +231,7 @@ const BlogCard = ({ blog, setBlogs }) => {
       </div>
 
       {/* Actions */}
+      {userRole?.toLowerCase() === 'admin' &&
       <div className="flex border-t p-2 bg-gray-50 justify-end gap-2 mt-auto">
         <Button
           variant="ghost"
@@ -247,6 +254,7 @@ const BlogCard = ({ blog, setBlogs }) => {
           {isDeleting ? 'Deleting...' : 'Delete'}
         </Button>
       </div>
+      }
     </Card>
   );
 };

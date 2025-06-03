@@ -23,7 +23,7 @@ export default function PagesTable() {
   const dropdownRef = useRef(null);
   const router = useRouter();
   const dispatch = useDispatch();
-
+  const {userRole} = useSelector((state) => state.auth)
 
   const { data: pagesData, isLoading, error, refetch } = useGetAllPagesQuery();
   const [deletePage, { isLoading: isDeleting }] = useDeletePageMutation();
@@ -233,12 +233,13 @@ export default function PagesTable() {
             </svg>
           </div>
         </div>
+        {userRole.toLowerCase() === 'admin' &&
         <Button onClick={handleAddSub }
           className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
         >
           <PlusCircle size={18} className="mr-1" />
             Add Page
-        </Button>
+        </Button>}
       </div>
 
       {/* Table */}
@@ -303,21 +304,23 @@ export default function PagesTable() {
                     </div>   
                   </td>
                   <td className="px-4 py-4 text-right text-sm font-medium relative">
-                    <button
-                      onClick={() => handleActionsClick(page._id)}
-                      className="text-gray-400 hover:text-gray-900"
-                    >
-                      <svg
-                        className="w-5 h-5"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
+                    {userRole.toLowerCase() === 'admin' &&
+                    <div>
+                      <button
+                        onClick={() => handleActionsClick(page._id)}
+                        className="text-gray-400 hover:text-gray-900"
                       >
-                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
-                      </svg>
-                    </button>
+                        <svg
+                          className="w-5 h-5"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                        </svg>
+                      </button>
 
-                    {activeDropdown === page._id && (
+                      {activeDropdown === page._id && (
                       <div
                         ref={dropdownRef}
                         className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200"
@@ -337,7 +340,9 @@ export default function PagesTable() {
                           </button>
                         </div>
                       </div>
-                    )}
+                      )}
+                    </div>
+                    }
                   </td>
                 </tr>
               ))
