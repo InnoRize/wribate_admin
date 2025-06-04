@@ -10,6 +10,7 @@ import { setCurrentBlog } from '../../app/features/blogSlice';
 import { ArrowLeft, PlusCircle, Search, User, Eye, Calendar, Pencil, Trash } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import QuillPreviewBox from '../QuillPreviewBox';
 
 const Blogs = () => {
   const dispatch = useDispatch();
@@ -182,16 +183,17 @@ const BlogCard = ({ blog, setBlogs, userRole }) => {
 
   return (
     <Card className="overflow-hidden p-0 h-full flex flex-col border rounded-none transition-all duration-200">
-      <div className="flex flex-col sm:flex-row">
+      <div className="p-1 flex flex-col sm:flex-row">
         {/* Content (Left Side) */}
-        <CardContent className="p-2 flex flex-col">
+        <CardContent className=" flex flex-col">
           <h2 className="text-lg flex-grow font-medium mb-2 line-clamp-2">
             {truncateText(blog.title, 70)}
           </h2>
 
-          <p className="text-sm flex-grow text-gray-600 mb-3 line-clamp-3">
+          {/* <p className="text-sm flex-grow text-gray-600 mb-3 line-clamp-3">
             {truncateText(blog.content, 150)}
-          </p>
+          </p> */}
+          <QuillPreviewBox value={blog.content}/>
 
           <div className="flex items-center text-xs text-gray-500 flex-wrap gap-2 mt-auto">
             <div className="flex items-center gap-1">

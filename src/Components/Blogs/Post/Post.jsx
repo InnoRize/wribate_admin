@@ -11,6 +11,14 @@ import toast from 'react-hot-toast';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import Toastify from '../../../utils/Toast';
+import he from "he";
+import dynamic from 'next/dynamic'; // Add dynamic import
+import "react-quill-new/dist/quill.snow.css";
+// Replace direct import with dynamic import
+const ReactQuill = dynamic(() => import('react-quill-new'), {
+    ssr: false, // Disable server-side rendering for this component
+    loading: () => <p>Loading editor...</p>
+});
 
 export default function SimpleBlogPost() {
     const editBlog = useSelector((state) => state.blog.currentBlog);;
@@ -68,8 +76,7 @@ export default function SimpleBlogPost() {
             }
         } catch (err) {
             console.error(err);
-            console.log(err.response.data)
-            Toastify(err.response.data.message || "Failed to publish post.", "warn")
+            Toastify(err.response?.data?.message || "Failed to publish post.", "warn")
         } finally {
             setIsSubmitting(false);
         }
@@ -136,12 +143,25 @@ export default function SimpleBlogPost() {
                                 <Label htmlFor="content" className="text-sm font-medium">
                                     Content <span className="text-red-500">*</span>
                                 </Label>
-                                <Textarea
+                                {/* <Textarea
                                     id="content"
                                     value={content}
                                     onChange={(e) => setContent(e.target.value)}
                                     placeholder="Write your blog post content here..."
                                     className="min-h-[200px] focus:ring-2 focus:ring-blue-500"
+                                    required
+                                /> */}
+                                <ReactQuill
+                                    id="content"
+                                    theme="snow"
+                                    value={content && he.decode(content)}
+                                    placeholder="Write your blog post content here..."
+                                    onChange={setContent}
+                                    style={{
+                                        height: '250px',
+                                        backgroundColor: "white",
+                                        overflowY: "auto"
+                                    }}
                                     required
                                 />
                             </div>
