@@ -184,7 +184,7 @@ export default function SimpleBlogPost() {
                 types: ['heading', 'paragraph'],
             }),
         ],
-        content: he.decode(editBlog?.content) || '<p>Start writing your blog post...</p>',
+        content: editBlog?.content && he.decode(editBlog?.content) || '<p>Start writing your blog post...</p>',
         editorProps: {
             attributes: {
                 class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[300px] p-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1',
