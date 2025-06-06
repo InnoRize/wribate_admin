@@ -4,7 +4,18 @@ import { Button } from '../../../Components/ui/button';
 import { Input } from '../../../Components/ui/input';
 import { Label } from '../../../Components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../Components/ui/card';
-import { ArrowLeft, Bold, Italic, List, ListOrdered, Quote, Undo, Redo, Image as ImageIcon } from 'lucide-react';
+import { 
+    ArrowLeft, 
+    Bold, 
+    Italic, 
+    List, 
+    ListOrdered, 
+    Quote, 
+    Undo, 
+    Redo, 
+    Image as ImageIcon,
+    ChevronDown 
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import axios from 'axios';
@@ -20,6 +31,71 @@ import BulletList from '@tiptap/extension-bullet-list';
 import OrderedList from '@tiptap/extension-ordered-list';
 import he from 'he'
 
+// Heading Dropdown Component
+const HeadingDropdown = ({ editor }) => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    const headingOptions = [
+        { level: 0, label: 'Paragraph', command: () => editor.chain().focus().setParagraph().run() },
+        { level: 1, label: 'Heading 1', command: () => editor.chain().focus().toggleHeading({ level: 1 }).run() },
+        { level: 2, label: 'Heading 2', command: () => editor.chain().focus().toggleHeading({ level: 2 }).run() },
+        { level: 3, label: 'Heading 3', command: () => editor.chain().focus().toggleHeading({ level: 3 }).run() },
+        { level: 4, label: 'Heading 4', command: () => editor.chain().focus().toggleHeading({ level: 4 }).run() },
+        { level: 5, label: 'Heading 5', command: () => editor.chain().focus().toggleHeading({ level: 5 }).run() },
+        { level: 6, label: 'Heading 6', command: () => editor.chain().focus().toggleHeading({ level: 6 }).run() },
+    ];
+
+    const getCurrentHeadingLabel = () => {
+        if (editor.isActive('heading', { level: 1 })) return 'Heading 1';
+        if (editor.isActive('heading', { level: 2 })) return 'Heading 2';
+        if (editor.isActive('heading', { level: 3 })) return 'Heading 3';
+        if (editor.isActive('heading', { level: 4 })) return 'Heading 4';
+        if (editor.isActive('heading', { level: 5 })) return 'Heading 5';
+        if (editor.isActive('heading', { level: 6 })) return 'Heading 6';
+        return 'Paragraph';
+    };
+
+    const handleOptionClick = (option) => {
+        option.command();
+        setIsOpen(false);
+    };
+
+    return (
+        <div className="relative">
+            <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsOpen(!isOpen)}
+                className="flex items-center gap-1 min-w-[100px] justify-between"
+            >
+                <span className="text-xs">{getCurrentHeadingLabel()}</span>
+                <ChevronDown size={12} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            </Button>
+            
+            {isOpen && (
+                <div className="absolute top-full left-0 mt-1 bg-white border rounded-md shadow-lg z-50 min-w-[140px]">
+                    {headingOptions.map((option) => (
+                        <button
+                            key={option.level}
+                            type="button"
+                            onClick={() => handleOptionClick(option)}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-100 first:rounded-t-md last:rounded-b-md ${
+                                (option.level === 0 && !editor.isActive('heading')) ||
+                                editor.isActive('heading', { level: option.level })
+                                    ? 'bg-gray-100 font-medium'
+                                    : ''
+                            }`}
+                        >
+                            {option.label}
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
+
 // Toolbar component for Tiptap editor
 const MenuBar = ({ editor, onImageUpload }) => {
     if (!editor) {
@@ -28,6 +104,8 @@ const MenuBar = ({ editor, onImageUpload }) => {
 
     return (
         <div className="border-b p-2 flex flex-wrap gap-1">
+            <HeadingDropdown editor={editor} />
+            <div className="w-px h-6 bg-gray-200 mx-1" />
             <Button
                 type="button"
                 variant={editor.isActive('bold') ? 'default' : 'ghost'}
@@ -152,6 +230,10 @@ export default function SimpleBlogPost() {
                     keepMarks: true,
                     keepAttributes: false,
                 },
+                // Configure headings
+                heading: {
+                    levels: [1, 2, 3, 4, 5, 6],
+                },
             }),
             // Add individual extensions for better control
             BulletList.configure({
@@ -187,7 +269,7 @@ export default function SimpleBlogPost() {
         content: editBlog?.content && he.decode(editBlog?.content) || '<p>Start writing your blog post...</p>',
         editorProps: {
             attributes: {
-                class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[300px] p-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1',
+                class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[300px] p-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1 [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:mt-6 [&_h1]:mb-4 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-5 [&_h2]:mb-3 [&_h3]:text-xl [&_h3]:font-bold [&_h3]:mt-4 [&_h3]:mb-2 [&_h4]:text-lg [&_h4]:font-semibold [&_h4]:mt-3 [&_h4]:mb-2 [&_h5]:text-base [&_h5]:font-semibold [&_h5]:mt-3 [&_h5]:mb-2 [&_h6]:text-sm [&_h6]:font-semibold [&_h6]:mt-2 [&_h6]:mb-1',
             },
         },
     });
@@ -363,7 +445,7 @@ export default function SimpleBlogPost() {
                                     </div>
                                     <EditorContent 
                                         editor={editor} 
-                                        className="min-h-[300px] max-h-[500px] overflow-y-auto"
+                                        className="min-h-[600px] max-h-[600px] overflow-y-auto"
                                     />
                                 </div>
                             </div>
