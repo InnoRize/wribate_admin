@@ -4,277 +4,29 @@ import { Button } from '../../../Components/ui/button';
 import { Input } from '../../../Components/ui/input';
 import { Label } from '../../../Components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../Components/ui/card';
-import { 
-    ArrowLeft, 
-    Bold, 
-    Italic, 
-    List, 
-    ListOrdered, 
-    Quote, 
-    Undo, 
-    Redo, 
-    Image as ImageIcon,
-    ChevronDown 
-} from 'lucide-react';
+import { ArrowLeft, Image } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import Toastify from '../../../utils/Toast';
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Image from '@tiptap/extension-image';
-import Link from '@tiptap/extension-link';
-import TextAlign from '@tiptap/extension-text-align';
-import ListItem from '@tiptap/extension-list-item';
-import BulletList from '@tiptap/extension-bullet-list';
-import OrderedList from '@tiptap/extension-ordered-list';
-import he from 'he'
+import dynamic from 'next/dynamic';
+import "react-quill-new/dist/quill.snow.css";
 
-// Heading Dropdown Component
-const HeadingDropdown = ({ editor }) => {
-    const [isOpen, setIsOpen] = useState(false);
-
-    const headingOptions = [
-        { level: 0, label: 'Paragraph', command: () => editor.chain().focus().setParagraph().run() },
-        { level: 1, label: 'Heading 1', command: () => editor.chain().focus().toggleHeading({ level: 1 }).run() },
-        { level: 2, label: 'Heading 2', command: () => editor.chain().focus().toggleHeading({ level: 2 }).run() },
-        { level: 3, label: 'Heading 3', command: () => editor.chain().focus().toggleHeading({ level: 3 }).run() },
-        { level: 4, label: 'Heading 4', command: () => editor.chain().focus().toggleHeading({ level: 4 }).run() },
-        { level: 5, label: 'Heading 5', command: () => editor.chain().focus().toggleHeading({ level: 5 }).run() },
-        { level: 6, label: 'Heading 6', command: () => editor.chain().focus().toggleHeading({ level: 6 }).run() },
-    ];
-
-    const getCurrentHeadingLabel = () => {
-        if (editor.isActive('heading', { level: 1 })) return 'Heading 1';
-        if (editor.isActive('heading', { level: 2 })) return 'Heading 2';
-        if (editor.isActive('heading', { level: 3 })) return 'Heading 3';
-        if (editor.isActive('heading', { level: 4 })) return 'Heading 4';
-        if (editor.isActive('heading', { level: 5 })) return 'Heading 5';
-        if (editor.isActive('heading', { level: 6 })) return 'Heading 6';
-        return 'Paragraph';
-    };
-
-    const handleOptionClick = (option) => {
-        option.command();
-        setIsOpen(false);
-    };
-
-    return (
-        <div className="relative">
-            <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-1 min-w-[100px] justify-between"
-            >
-                <span className="text-xs">{getCurrentHeadingLabel()}</span>
-                <ChevronDown size={12} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-            </Button>
-            
-            {isOpen && (
-                <div className="absolute top-full left-0 mt-1 bg-white border rounded-md shadow-lg z-50 min-w-[140px]">
-                    {headingOptions.map((option) => (
-                        <button
-                            key={option.level}
-                            type="button"
-                            onClick={() => handleOptionClick(option)}
-                            className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-100 first:rounded-t-md last:rounded-b-md ${
-                                (option.level === 0 && !editor.isActive('heading')) ||
-                                editor.isActive('heading', { level: option.level })
-                                    ? 'bg-gray-100 font-medium'
-                                    : ''
-                            }`}
-                        >
-                            {option.label}
-                        </button>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-};
-
-// Toolbar component for Tiptap editor
-const MenuBar = ({ editor, onImageUpload }) => {
-    if (!editor) {
-        return null;
-    }
-
-    return (
-        <div className="border-b p-2 flex flex-wrap gap-1">
-            <HeadingDropdown editor={editor} />
-            <div className="w-px h-6 bg-gray-200 mx-1" />
-            <Button
-                type="button"
-                variant={editor.isActive('bold') ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => editor.chain().focus().toggleBold().run()}
-                disabled={!editor.can().chain().focus().toggleBold().run()}
-            >
-                <Bold size={16} />
-            </Button>
-            <Button
-                type="button"
-                variant={editor.isActive('italic') ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => editor.chain().focus().toggleItalic().run()}
-                disabled={!editor.can().chain().focus().toggleItalic().run()}
-            >
-                <Italic size={16} />
-            </Button>
-            <Button
-                type="button"
-                variant={editor.isActive('bulletList') ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => editor.chain().focus().toggleBulletList().run()}
-            >
-                <List size={16} />
-            </Button>
-            <Button
-                type="button"
-                variant={editor.isActive('orderedList') ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => editor.chain().focus().toggleOrderedList().run()}
-            >
-                <ListOrdered size={16} />
-            </Button>
-            <Button
-                type="button"
-                variant={editor.isActive('blockquote') ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => editor.chain().focus().toggleBlockquote().run()}
-            >
-                <Quote size={16} />
-            </Button>
-            <div className="w-px h-6 bg-gray-200 mx-1" />
-            <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => editor.chain().focus().undo().run()}
-                disabled={!editor.can().chain().focus().undo().run()}
-            >
-                <Undo size={16} />
-            </Button>
-            <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => editor.chain().focus().redo().run()}
-                disabled={!editor.can().chain().focus().redo().run()}
-            >
-                <Redo size={16} />
-            </Button>
-            <div className="w-px h-6 bg-gray-200 mx-1" />
-            <Button
-                type="button"
-                variant={editor.isActive({ textAlign: 'left' }) ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => editor.chain().focus().setTextAlign('left').run()}
-            >
-                Left
-            </Button>
-            <Button
-                type="button"
-                variant={editor.isActive({ textAlign: 'center' }) ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => editor.chain().focus().setTextAlign('center').run()}
-            >
-                Center
-            </Button>
-            <Button
-                type="button"
-                variant={editor.isActive({ textAlign: 'right' }) ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => editor.chain().focus().setTextAlign('right').run()}
-            >
-                Right
-            </Button>
-            <div className="w-px h-6 bg-gray-200 mx-1" />
-            <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={onImageUpload}
-            >
-                <ImageIcon size={16} />
-            </Button>
-        </div>
-    );
-};
+// Dynamically import ReactQuill to avoid SSR issues
+const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
 
 export default function SimpleBlogPost() {
     const editBlog = useSelector((state) => state.blog.currentBlog);
     const [title, setTitle] = useState(editBlog?.title || '');
     const { userId } = useSelector((state) => state.auth);
+    const [content, setContent] = useState(editBlog?.content || '');
     const [imagePreview, setImagePreview] = useState(editBlog?.image || null);
+    const [editorImage, setEditorImage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
 
-    // Initialize Tiptap editor with proper list configuration
-    const editor = useEditor({
-        extensions: [
-            StarterKit.configure({
-                // Configure lists properly
-                bulletList: {
-                    keepMarks: true,
-                    keepAttributes: false,
-                },
-                orderedList: {
-                    keepMarks: true,
-                    keepAttributes: false,
-                },
-                listItem: {
-                    keepMarks: true,
-                    keepAttributes: false,
-                },
-                // Configure headings
-                heading: {
-                    levels: [1, 2, 3, 4, 5, 6],
-                },
-            }),
-            // Add individual extensions for better control
-            BulletList.configure({
-                itemTypeName: 'listItem',
-                HTMLAttributes: {
-                    class: 'my-bullet-list',
-                },
-            }),
-            OrderedList.configure({
-                itemTypeName: 'listItem',
-                HTMLAttributes: {
-                    class: 'my-ordered-list',
-                },
-            }),
-            ListItem.configure({
-                HTMLAttributes: {
-                    class: 'my-list-item',
-                },
-            }),
-            Image.configure({
-                HTMLAttributes: {
-                    class: 'max-w-full h-auto rounded-lg mx-auto block my-4',
-                },
-                allowBase64: true,
-            }),
-            Link.configure({
-                openOnClick: false,
-            }),
-            TextAlign.configure({
-                types: ['heading', 'paragraph'],
-            }),
-        ],
-        content: editBlog?.content && he.decode(editBlog?.content) || '<p>Start writing your blog post...</p>',
-        editorProps: {
-            attributes: {
-                class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[300px] p-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1 [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:mt-6 [&_h1]:mb-4 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-5 [&_h2]:mb-3 [&_h3]:text-xl [&_h3]:font-bold [&_h3]:mt-4 [&_h3]:mb-2 [&_h4]:text-lg [&_h4]:font-semibold [&_h4]:mt-3 [&_h4]:mb-2 [&_h5]:text-base [&_h5]:font-semibold [&_h5]:mt-3 [&_h5]:mb-2 [&_h6]:text-sm [&_h6]:font-semibold [&_h6]:mt-2 [&_h6]:mb-1',
-            },
-        },
-    });
-
-    // Handle image selection
+    // Handle featured image selection
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -286,32 +38,40 @@ export default function SimpleBlogPost() {
         }
     };
 
-    // Handle image upload to editor
-    const handleImageUploadToEditor = () => {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.onchange = (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    const base64 = reader.result;
-                    editor.chain().focus().setImage({ src: base64 }).run();
-                };
-                reader.readAsDataURL(file);
-            }
-        };
-        input.click();
+    // Handle editor image selection
+    const handleEditorImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setEditorImage(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    // Insert image into editor
+    const insertImageIntoEditor = () => {
+        if (editorImage && window.quillRef) {
+            const quill = window.quillRef.getEditor();
+            const range = quill.getSelection();
+            const index = range ? range.index : quill.getLength();
+            quill.insertEmbed(index, 'image', editorImage);
+            quill.setSelection(index + 1);
+            setEditorImage(''); // Clear the image after inserting
+        }
+    };
+
+    // Handle content change
+    const handleContentChange = (value) => {
+        setContent(value);
     };
 
     // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        const content = editor?.getHTML();
-        
-        if (!title.trim() || !content || content === '<p></p>') {
+        if (!title.trim() || !content || content === '<p><br></p>') {
             toast.error("Please fill all required fields");
             return;
         }
@@ -346,26 +106,6 @@ export default function SimpleBlogPost() {
         } finally {
             setIsSubmitting(false);
         }
-    };
-
-    // Add link to editor
-    const addLinkToEditor = () => {
-        const previousUrl = editor.getAttributes('link').href;
-        const url = prompt('URL', previousUrl);
-
-        // cancelled
-        if (url === null) {
-            return;
-        }
-
-        // empty
-        if (url === '') {
-            editor.chain().focus().extendMarkRange('link').unsetLink().run();
-            return;
-        }
-
-        // update link
-        editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
     };
 
     if (!userId) {
@@ -431,28 +171,52 @@ export default function SimpleBlogPost() {
                                 <Label className="text-sm font-medium">
                                     Content <span className="text-red-500">*</span>
                                 </Label>
+                                
+                                {/* Image insertion controls */}
+                                <div className="flex items-center gap-2 p-3 bg-gray-50 border rounded-lg">
+                                    <Label htmlFor="editorImage" className="text-sm font-medium">
+                                        Insert Image:
+                                    </Label>
+                                    <Input
+                                        id="editorImage"
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleEditorImageChange}
+                                        className="flex-1 cursor-pointer"
+                                    />
+                                    <Button
+                                        type="button"
+                                        onClick={insertImageIntoEditor}
+                                        disabled={!editorImage}
+                                        variant="outline"
+                                        size="sm"
+                                        className="flex items-center gap-1"
+                                    >
+                                        <Image size={16} />
+                                        Insert
+                                    </Button>
+                                </div>
+
                                 <div className="border rounded-lg overflow-hidden bg-white">
-                                    <MenuBar editor={editor} onImageUpload={handleImageUploadToEditor} />
-                                    <div className="flex gap-2 p-2 border-b bg-gray-50">
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={addLinkToEditor}
-                                        >
-                                            Add Link
-                                        </Button>
-                                    </div>
-                                    <EditorContent 
-                                        editor={editor} 
-                                        className="min-h-[600px] max-h-[600px] overflow-y-auto"
+                                    <ReactQuill
+                                        ref={(el) => {
+                                            window.quillRef = el;
+                                        }}
+                                        theme="snow"
+                                        value={content}
+                                        onChange={handleContentChange}
+                                        placeholder="Start writing your blog post..."
+                                        style={{
+                                            minHeight: '400px'
+                                        }}
+                                        className="min-h-[400px]"
                                     />
                                 </div>
                             </div>
 
                             <div className="space-y-2">
                                 <Label htmlFor="image" className="text-sm font-medium">
-                                    Featured Image <span className="text-red-500">*</span>
+                                    Featured Image
                                 </Label>
                                 <Input
                                     id="image"
@@ -487,6 +251,30 @@ export default function SimpleBlogPost() {
                     </form>
                 </Card>
             </main>
+
+            <style jsx global>{`
+                .ql-editor {
+                    min-height: 350px !important;
+                    font-family: inherit;
+                }
+                
+                .ql-container {
+                    font-family: inherit;
+                }
+                
+                .ql-toolbar {
+                    border-top: none !important;
+                    border-left: none !important;
+                    border-right: none !important;
+                    border-bottom: 1px solid #e5e7eb !important;
+                }
+                
+                .ql-container {
+                    border-left: none !important;
+                    border-right: none !important;
+                    border-bottom: none !important;
+                }
+            `}</style>
         </div>
     );
 }
