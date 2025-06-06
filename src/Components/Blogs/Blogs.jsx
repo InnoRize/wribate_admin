@@ -5,15 +5,16 @@ import { Card, CardContent } from '../../Components/ui/card';
 import { Input } from '../../Components/ui/input';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import {useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setCurrentBlog } from '../../app/features/blogSlice';
 import { ArrowLeft, PlusCircle, Search, User, Eye, Calendar, Pencil, Trash } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import he from 'he';
 
 const Blogs = () => {
   const dispatch = useDispatch();
-  const {userRole} = useSelector((state) => state.auth)
+  const { userRole } = useSelector((state) => state.auth)
   const router = useRouter();
   const [blogs, setBlogs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -26,12 +27,12 @@ const Blogs = () => {
         setIsLoading(true);
         const res = await axios.get(
           `${process.env.NEXT_PUBLIC_APP_BASE_URL}/admin/getBlogs`,
-          { 
-          headers: {
-            'Authorization': `Bearer ${token}`
-          },
-          withCredentials: true 
-        }
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            },
+            withCredentials: true
+          }
         );
 
         const data = res.data;
@@ -92,13 +93,13 @@ const Blogs = () => {
             />
           </div>
           {userRole?.toLowerCase() === 'admin' &&
-          <Button
-            onClick={handleCreate}
-            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
-          >
-            <PlusCircle size={18} className="mr-1" />
-            New Post
-          </Button>
+            <Button
+              onClick={handleCreate}
+              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <PlusCircle size={18} className="mr-1" />
+              New Post
+            </Button>
           }
         </div>
       </div>
@@ -117,15 +118,15 @@ const Blogs = () => {
           </div>
         ) : (
           (userRole.toLowerCase() === 'admin' &&
-          <div className="text-center py-12">
-            <p className="text-gray-500 mb-4">
-              {searchTerm ? "No blogs match your search" : "You haven't created any blog posts yet"}
-            </p>
-            <Button onClick={() => router.push('blogs/post-blog')}
-              className='text-white'>
-              Create Your First Blog Post
-            </Button>
-          </div>
+            <div className="text-center py-12">
+              <p className="text-gray-500 mb-4">
+                {searchTerm ? "No blogs match your search" : "You haven't created any blog posts yet"}
+              </p>
+              <Button onClick={() => router.push('blogs/post-blog')}
+                className='text-white'>
+                Create Your First Blog Post
+              </Button>
+            </div>
           ) || <div></div>
         )}
       </div>
@@ -137,7 +138,7 @@ const BlogCard = ({ blog, setBlogs, userRole }) => {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
   const dispatch = useDispatch();
-  
+
   const handleEdit = () => {
     dispatch(setCurrentBlog(blog));
     router.push('blogs/post-blog')
@@ -149,11 +150,11 @@ const BlogCard = ({ blog, setBlogs, userRole }) => {
       const token = localStorage.getItem("token")
       const res = await axios.delete(
         `${process.env.NEXT_PUBLIC_APP_BASE_URL}/admin/deleteBlog/${id}`,
-        { 
+        {
           headers: {
             'Authorization': `Bearer ${token}`
           },
-          withCredentials: true 
+          withCredentials: true
         }
       );
 
@@ -189,10 +190,10 @@ const BlogCard = ({ blog, setBlogs, userRole }) => {
             {truncateText(blog.title, 70)}
           </h2>
 
-          <p className="text-sm flex-grow text-gray-600 mb-3 line-clamp-3">
-            {truncateText(blog.content, 150)}
-          </p>
-
+          <div
+            className="text-sm flex-grow text-gray-600 mb-3 line-clamp-3"
+            dangerouslySetInnerHTML={{ __html: truncateText(he.decode(blog.content), 150) }}
+          />
           <div className="flex items-center text-xs text-gray-500 flex-wrap gap-2 mt-auto">
             <div className="flex items-center gap-1">
               <User size={14} />
@@ -232,28 +233,28 @@ const BlogCard = ({ blog, setBlogs, userRole }) => {
 
       {/* Actions */}
       {userRole?.toLowerCase() === 'admin' &&
-      <div className="flex border-t p-2 bg-gray-50 justify-end gap-2 mt-auto">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
-          onClick={handleEdit}
-        >
-          <Pencil size={16} className="mr-1" />
-          Edit
-        </Button>
+        <div className="flex border-t p-2 bg-gray-50 justify-end gap-2 mt-auto">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+            onClick={handleEdit}
+          >
+            <Pencil size={16} className="mr-1" />
+            Edit
+          </Button>
 
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-red-600 hover:text-red-800 hover:bg-red-50"
-          onClick={() => handleDelete(blog._id)}
-          disabled={isDeleting}
-        >
-          <Trash size={16} className="mr-1" />
-          {isDeleting ? 'Deleting...' : 'Delete'}
-        </Button>
-      </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-red-600 hover:text-red-800 hover:bg-red-50"
+            onClick={() => handleDelete(blog._id)}
+            disabled={isDeleting}
+          >
+            <Trash size={16} className="mr-1" />
+            {isDeleting ? 'Deleting...' : 'Delete'}
+          </Button>
+        </div>
       }
     </Card>
   );
