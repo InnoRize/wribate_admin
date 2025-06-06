@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux';
 import Toastify from '../../../utils/Toast';
 import dynamic from 'next/dynamic';
 import "react-quill-new/dist/quill.snow.css";
+import he from 'he'
 
 // Dynamically import ReactQuill to avoid SSR issues
 const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
@@ -203,7 +204,7 @@ export default function SimpleBlogPost() {
                                             window.quillRef = el;
                                         }}
                                         theme="snow"
-                                        value={content}
+                                        value={he.decode(content)}
                                         onChange={handleContentChange}
                                         placeholder="Start writing your blog post..."
                                         style={{
