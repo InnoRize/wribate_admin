@@ -65,7 +65,7 @@ export default function CountryDropdown({ selectedCountry, onCountrySelect, clas
         className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-md text-sm hover:bg-gray-50 transition-colors w-full justify-between"
       >
         <span className="truncate">
-          {selectedCountry.length > 15 ? `${selectedCountry.slice(0, 15)}...` : selectedCountry}
+          {selectedCountry?.length > 15 ? `${selectedCountry.slice(0, 15)}...` : selectedCountry}
         </span>
         <ChevronDown 
           size={16} 

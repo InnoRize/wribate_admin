@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 const BatchPropose = () => {
   const [file, setFile] = useState(null);
   const [country, setCountry] = useState('');
-  const [institution, setInstitution] = useState('');
+  // const [institution, setInstitution] = useState('');
   const [submittedBy, setSubmittedBy] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const {user} = useSelector((state) => state.auth)
@@ -26,7 +26,7 @@ const BatchPropose = () => {
       alert('Please upload a file');
       return;
     }
-    if (!country || !institution || !submittedBy) {
+    if (!country || !submittedBy) {
       alert('Please fill in all required fields');
       return;
     }
@@ -37,7 +37,7 @@ const BatchPropose = () => {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('country', country);
-      formData.append('institution', institution);
+      // formData.append('institution', institution);
       formData.append('submittedBy', submittedBy);
       formData.append('submittedAt', new Date().toISOString());
       formData.append('user_id',user?._id || "")
@@ -102,7 +102,7 @@ const BatchPropose = () => {
         </div>
 
         {/* Form Fields */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
             <CountryDropdown
@@ -110,7 +110,7 @@ const BatchPropose = () => {
               onChange={setCountry}
             />
           </div>
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Institution</label>
             <input
               type="text"
@@ -119,7 +119,7 @@ const BatchPropose = () => {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Enter institution"
             />
-          </div>
+          </div> */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Submitted By</label>
             <input

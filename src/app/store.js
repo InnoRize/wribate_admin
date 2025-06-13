@@ -8,6 +8,7 @@ import subscriptionSlice from "./features/subscriptionSlice";
 import pageSlice from "./features/pageSlice"
 import userSlice from "./features/userSlice"
 import debateSlice from "./features/debateSlice"
+import scrappedSlice from "./features/scrappedSlice";
 // import storeSlice from "./services/storeSlice";
 
 export const store = configureStore({
@@ -20,6 +21,7 @@ export const store = configureStore({
     page: pageSlice,
     user: userSlice,
     debate: debateSlice,
+    scrapped: scrappedSlice,
     [baseApi.reducerPath]: baseApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>

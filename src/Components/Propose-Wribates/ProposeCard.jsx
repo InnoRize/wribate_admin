@@ -11,6 +11,7 @@ import authHeader from "../../utils/authHeader";
 import LaunchDialog from "./LaunchDialog";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentDebate } from "../../app/features/debateSlice";
+import {setCurrentWribate} from "../../app/features/wribateSlice";
 
 function DebateCard({ debate, user, setHook, hook, handleDelete, isDeleting,
   handleActionsClick, activeDropdown, dropdownRef
@@ -25,93 +26,13 @@ function DebateCard({ debate, user, setHook, hook, handleDelete, isDeleting,
   const [open, setOpen] = useState(false)
   const router = useRouter((state) => state.auth);
 
-  useEffect(() => {
-    const fetchUsers = async (side) => {
-      try {
-        const res = await axios.get(process.env.NEXT_PUBLIC_APP_BASE_URL + '/getusers?wribateId=' + encodeURIComponent(debate._id) + '&side=' + encodeURIComponent(side))
-        const data = res.data;
-
-        if (data.res) {
-          if (side == "for") {
-            setForUsers(data.users)
-          }
-          else {
-            setAgainstUsers(data.users)
-          }
-        }
-      }
-      catch (err) {
-        console.log(err);
-      }
+  const handleLaunch = () => {
+    if (debate) {
+      console.log(debate)
+      dispatch(setCurrentWribate(debate));
+      router.push(`/wribates/post-wribate`);
     }
-
-    // fetchUsers('for');
-    // fetchUsers('against');
-  }, [hook])
-
-  // const handleUpvote = async (vote) => {
-  //   try {
-  //     if (!user?._id) {
-  //       toast.error("Login to vote");
-  //       return;
-  //     }
-
-  //     const res = await axios.post(process.env.NEXT_PUBLIC_APP_BASE_URL + '/propose-vote', {
-  //       id: user._id,
-  //       propose_id: debate._id,
-  //       voteSide: vote
-  //     }, {
-  //       headers: authHeader()
-  //     });
-
-  //     const data = res.data;
-  //     if (data.res) {
-  //       toast.success("Voted successfully");
-  //       setVotes((prev) => prev + 1);
-  //       if (vote === "for") {
-  //         debate.votesFor += 1;
-  //         debate.votesAgainst -= 1;
-  //       } else {
-  //         debate.votesAgainst += 1;
-  //         debate.votesFor -= 1;
-  //       }
-  //       setReadyToWribate(data.ready)
-  //     } else {
-  //       toast.success("Already voted!");
-  //     }
-  //   } catch (err) {
-  //     toast.error("Error voting");
-  //     console.log(err);
-  //   }
-  // };
-
-  // const handleReadyToWribate = async () => {
-  //   try {
-
-  //     const res = axios.post(process.env.NEXT_PUBLIC_APP_BASE_URL + '/readytowribate', {
-  //       userId: user?._id,
-  //       proposeId: debate._id
-  //     })
-
-  //     if (res.data) {
-  //       toast.success("Find Users Here!")
-  //       setOpen(true)
-  //     }
-
-  //   }
-  //   catch (err) {
-  //     console.log(err);
-  //     toast.error("Something went wrong");
-  //   }
-  // }
-
-  // const handleLaunch = () => {
-  //   if (debate) {
-  //     console.log(debate)
-  //     dispatch(setCurrentWribate(debate));
-  //     router.push(`/wribates/post-wribate`);
-  //   }
-  // };
+  };
   
   const handleEdit = (debate) => {
     dispatch(setCurrentDebate(debate));
@@ -197,8 +118,8 @@ function DebateCard({ debate, user, setHook, hook, handleDelete, isDeleting,
                   ))}
               </div>
             </div>
-            {/* <div className="flex items-center justify-between mb-2">
-              {(readyToWribate || debate.ready) && (
+            <div className="flex items-center justify-between mb-2">
+              {/* {(readyToWribate || debate.ready) && (
                 <Button
                   onClick={handleReadyToWribate}
                   variant="default"
@@ -207,9 +128,7 @@ function DebateCard({ debate, user, setHook, hook, handleDelete, isDeleting,
                 >
                   <Rocket size={16} /> Ready To Wribate
                 </Button>
-              )}
-
-
+              )} */}
               <Button
                 onClick={handleLaunch}
                 variant="default"
@@ -218,7 +137,7 @@ function DebateCard({ debate, user, setHook, hook, handleDelete, isDeleting,
               >
                 <PlayCircle size={16} /> Quick Launch
               </Button>
-            </div> */}
+            </div>
 
             {/* For/Against buttons */}
             <div className="">
